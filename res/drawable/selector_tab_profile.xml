@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- When selected-->
+	<item android:state_selected="true" android:drawable="@drawable/ic_tab_profile_selected"  />
+	
+	<!-- When not selected-->
+	<item android:drawable="@drawable/ic_tab_profile_selected" />
+</selector>

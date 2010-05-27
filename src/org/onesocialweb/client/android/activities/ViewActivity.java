@@ -1,0 +1,509 @@
+/*
+ *  Copyright 2010 Vodafone Group Services Ltd.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *    
+ */
+package org.onesocialweb.client.android.activities;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.onesocialweb.client.ConnectionStateListener.ConnectionState;
+import org.onesocialweb.client.android.Onesocialweb;
+import org.onesocialweb.client.android.OswPreferences;
+import org.onesocialweb.client.android.R;
+import org.onesocialweb.client.android.activities.common.ConnectionStatusListener;
+import org.onesocialweb.client.android.async.AsyncAvatarLoader;
+import org.onesocialweb.client.android.async.AsyncImageLoader;
+import org.onesocialweb.client.android.async.AsyncAvatarLoader.AvatarCallback;
+import org.onesocialweb.client.android.async.AsyncImageLoader.ImageCallback;
+import org.onesocialweb.client.android.service.AndroidOswService;
+import org.onesocialweb.model.acl.AclRule;
+import org.onesocialweb.model.acl.AclSubject;
+import org.onesocialweb.model.activity.ActivityActor;
+import org.onesocialweb.model.activity.ActivityEntry;
+import org.onesocialweb.model.activity.ActivityObject;
+import org.onesocialweb.model.atom.AtomContent;
+import org.onesocialweb.model.atom.AtomLink;
+import org.onesocialweb.model.atom.AtomReplyTo;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class ViewActivity extends Activity {
+
+	// Intent parameters
+	public static final String PARAM_ACTIVITY_ID = "activityId";
+	public static final String PIC_ID = "sharedPictureId";
+	public static final String PIC_BITMAP = "sharedPictureBitmap";
+
+	// Menu identifiers
+	private static final int MENU_INBOX = Menu.FIRST;
+	private static final int MENU_CONTACTS = Menu.FIRST + 1;
+	private static final int MENU_COMPOSE = Menu.FIRST + 2;
+	private static final int MENU_PREFERENCES = Menu.FIRST + 3;
+
+	// The view holder keep tracks of all view elements and helpers
+	private ViewHolder viewHolder;
+
+	// The application object
+	private Onesocialweb onesocialweb;
+	
+	// Onesocialweb service
+	private AndroidOswService service;
+
+	// A listener for connection state changes (to update the UI)
+	private ConnectionStatusListener connectionListener;
+
+	// The id of the activity we must display
+	private String activityId;
+	
+	// The jid of the activity author
+	private String userJid;
+
+	// The model for this view
+	private Model model;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// Be sure to call the super class.
+		super.onCreate(savedInstanceState);
+
+		// Keep a reference to the application
+		onesocialweb = (Onesocialweb) getApplication();
+		
+		// Assign the view so that we can find the view objects by ID
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		setContentView(R.layout.activity);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.oswcustomtitle);
+
+		// Keep track of the view elements
+		viewHolder = new ViewHolder(this);
+
+		// Initialize the generic connection listener (to update the UI)
+		connectionListener = new ConnectionStatusListener(viewHolder);
+
+		// Customize title bar with the activity name
+		viewHolder.title.setText("Activity details");
+		
+		// Add clickhandler for the shout button
+		viewHolder.shoutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ViewActivity.this, ComposeActivity.class);
+				intent.putExtra(ComposeActivity.RECIPIENT_JID, userJid);
+				startActivity(intent);
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		// Be sure to call the super class.
+		super.onResume();
+
+		// Get the intent which has called this activity in order to get the
+		activityId = getIntent().getStringExtra(PARAM_ACTIVITY_ID);
+		
+		// Retrieve the activity from the shared object storage 
+		setActivity((ActivityEntry) onesocialweb.getSharedObject(activityId));
+
+		// Bind with the Notification service
+		bindService(new Intent(ViewActivity.this, AndroidOswService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onPause() {
+		// Be sure to call the super class.
+		super.onPause();
+
+		// Cleanup our listeners and service bindings
+		if (service != null) {
+			service.removeConnectionStateListener(connectionListener);
+			service.removeConnectionProcessListener(connectionListener);
+			unbindService(mConnection);
+		}
+	}
+
+	/* Creates the menu items */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, MENU_INBOX, MENU_INBOX, getResources().getText(R.string.inbox)).setIcon(R.drawable.ic_menu_home);
+		menu.add(0, MENU_CONTACTS, MENU_CONTACTS, getResources().getText(R.string.contacts)).setIcon(R.drawable.ic_menu_friendslist);
+		menu.add(0, MENU_COMPOSE, MENU_COMPOSE, getResources().getText(R.string.composer)).setIcon(R.drawable.ic_menu_compose);
+		menu.add(0, MENU_PREFERENCES, MENU_PREFERENCES, getResources().getText(R.string.settings)).setIcon(android.R.drawable.ic_menu_preferences);
+		return true;
+	}
+
+	/* Handles item selections */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+
+		switch (item.getItemId()) {
+		case MENU_INBOX:
+			Intent intent = new Intent(this, InboxActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			finish();
+			return true;
+		case MENU_CONTACTS:
+			Intent conctactsIntent = new Intent(this, ContactsActivity.class);
+			startActivity(conctactsIntent);
+			return true;
+		case MENU_COMPOSE:
+			Intent composeIntent = new Intent(this, ComposeActivity.class);
+			startActivity(composeIntent);
+			return true;
+		case MENU_PREFERENCES:
+			startActivity(new Intent(this, OswPreferences.class));
+			return true;
+		}
+		return false;
+	}
+
+	private void setActivity(ActivityEntry activity) {
+		model = parseActivity(activity);
+		render();
+	}
+
+	private Model parseActivity(ActivityEntry activity) {
+		// Create a new model
+		model = new Model();
+
+		// Get the author JID
+		if (activity.hasActor() && activity.getActor().hasUri()) {
+			model.jid = activity.getActor().getUri();
+			userJid = model.jid;
+		}
+
+		// Get the author name
+		model.author = "unknown";
+		if (activity.hasActor()) {
+			ActivityActor actor = activity.getActor();
+			if (actor.hasName()) {
+				model.author = actor.getName();
+			} else if (actor.hasUri()) {
+				model.author = actor.getUri();
+			}
+		}
+
+		// Get the date
+		if (activity.hasPublished()) {
+			model.published = activity.getPublished();
+		}
+
+		// Get the acls if any
+		if (activity.hasAclRules()) {
+			List<AclRule> rule = activity.getAclRules();
+			for (AclRule aclRule : rule) {
+				List<AclSubject> ruleSubject = aclRule.getSubjects();
+				for (AclSubject aclSubject : ruleSubject) {
+					if (aclSubject.getType().equals(AclSubject.EVERYONE)) {
+						model.visibility.add(getResources().getString(R.string.everyone));
+					} else if (aclSubject.getType().equals(AclSubject.GROUP)) {
+						model.visibility.add(aclSubject.getName());
+					}
+				}
+			}
+		}
+
+		// Get the title
+		if (activity.hasTitle()) {
+			model.status = activity.getTitle();
+		}
+
+		// Fetch the recipients
+		if (activity.hasRecipients()) {
+			for (AtomReplyTo recipient : activity.getRecipients()) {
+				if (recipient.hasHref()) {
+					model.recipients.add(recipient.getHref());
+				}
+			}
+		}
+
+		// Fetch the attachments
+		if (activity.hasObjects()) {
+			for (ActivityObject object : activity.getObjects()) {
+
+				// Picture objects
+				if (object.getType().equals(ActivityObject.PICTURE)) {
+					PictureModel pictureModel = new PictureModel();
+					// Grab the picture uri
+					if (object.hasLinks()) {
+						AtomLink link = object.getLinks().get(0);
+						if (link.hasHref()) {
+							pictureModel.uri = link.getHref();
+						}
+					}
+					// Grab the picture title
+					if (object.hasTitle()) {
+						pictureModel.title = object.getTitle();
+					}
+					// Grab the picture legend
+					if (object.hasContents()) {
+						AtomContent content = object.getContents().get(0);
+						if (content.hasValue()) {
+							pictureModel.legend = content.getValue();
+						}
+					}
+					model.pictures.add(pictureModel);
+				}
+
+				// Link objects
+				else if (object.getType().equals(ActivityObject.LINK)) {
+					LinkModel linkModel = new LinkModel();
+					// Grab the link uri
+					if (object.hasLinks()) {
+						AtomLink link = object.getLinks().get(0);
+						if (link.hasHref()) {
+							linkModel.uri = link.getHref();
+						}
+					}
+					// Grab the picture title
+					if (object.hasTitle()) {
+						linkModel.title = object.getTitle();
+					}
+					// Grab the picture legend
+					if (object.hasContents()) {
+						AtomContent content = object.getContents().get(0);
+						if (content.hasValue()) {
+							linkModel.legend = content.getValue();
+						}
+					}
+					model.links.add(linkModel);
+				}
+			}
+		}
+
+		// Return the new model
+		return model;
+	}
+
+	private void render() {
+
+		// Display the jid
+		if (model.jid != null) {
+			viewHolder.jid.setText(model.jid);
+		}
+		
+		// Display the author name
+		if (model.author != null) {
+			viewHolder.actorName.setText(model.author);
+		}
+		
+		// Display availability
+		viewHolder.availability.setImageResource(PresenceIcon.getPresenceResource(AndroidOswService.getInstance().getContactPresence(model.jid)));
+		viewHolder.availability.setVisibility(View.VISIBLE); 
+
+		// Display the recipients
+		if (model.recipients.size() > 0 && model.recipients != null) {
+			viewHolder.shoutedTo.setVisibility(View.VISIBLE);
+			
+			final Iterator<String> recipients = model.recipients.iterator();
+			StringBuffer recipientsText = new StringBuffer();
+			while (recipients.hasNext()) {
+				recipientsText.append(recipients.next());
+				if (recipients.hasNext()) {
+					recipientsText.append(", ");
+				}
+			}
+			viewHolder.recipients.setText(recipientsText);
+		} else {
+			viewHolder.shoutedTo.setVisibility(View.GONE);	
+		}
+		
+		// Add a listener to trigger the profile view
+		if (model.jid != null) {
+			viewHolder.userInfo.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(ViewActivity.this, ProfileActivity.class);
+					intent.putExtra(ProfileActivity.PARAM_USER_JID, model.jid);
+					startActivity(intent);
+				}
+			});
+		}
+
+		// Display the avatar
+		if (model.avatar != null) {
+			viewHolder.avatar.setImageDrawable(model.avatar);
+		} else {
+			viewHolder.avatar.setImageResource(R.drawable.osw_avatar);
+			AsyncAvatarLoader.getInstance().loadAvatar(model.jid, new AvatarCallback() {
+				
+				@Override
+				public void avatarLoaded(String userJid, Drawable avatarDrawable) {
+					model.avatar = avatarDrawable;
+					viewHolder.avatar.setImageDrawable(avatarDrawable);
+				}
+			});
+		}
+
+		// Display the timestamp
+		if (model.published != null) {
+			SimpleDateFormat df = new SimpleDateFormat("d MMM yyyy '" + getResources().getString(R.string.at) + "' hh:mm a");
+			viewHolder.date.setText(df.format(model.published));
+		}
+
+		// Display the activity title (which is in fact the status update)
+		if (model.status != null) {
+			viewHolder.status.setText(model.status);
+		}
+
+		// Display the first picture (should evolve to a proper list)
+		if (model.pictures != null && model.pictures.size() > 0) {
+			final PictureModel pictureModel = model.pictures.get(0);
+			if (pictureModel.legend != null) {
+				viewHolder.pictureDesc.setText(pictureModel.legend);
+				viewHolder.pictureDesc.setVisibility(View.VISIBLE);
+			}
+			if (pictureModel.drawable != null) {
+				viewHolder.picture.setImageDrawable(pictureModel.drawable);
+				viewHolder.pictureContainer.setVisibility(View.VISIBLE);
+			} else {
+				AsyncImageLoader.getInstance().loadDrawable(pictureModel.uri, new ImageCallback() {
+					
+					@Override
+					public void imageLoaded(Drawable imageDrawable, String imageUrl) {
+						pictureModel.drawable = imageDrawable;
+						viewHolder.picture.setImageDrawable(imageDrawable);
+						viewHolder.pictureContainer.setVisibility(View.VISIBLE);
+					}
+				});
+			}
+		} else {
+			viewHolder.pictureContainer.setVisibility(View.GONE);
+			viewHolder.pictureDesc.setVisibility(View.GONE);
+		}
+
+		// Display the first link (should evolve to a proper list)
+		if (model.links != null && model.links.size() > 0) {
+			LinkModel linkModel = model.links.get(0);
+			if (linkModel.uri != null) {
+				viewHolder.linkHref.setText(linkModel.uri);
+				viewHolder.linkHref.setVisibility(View.VISIBLE);
+			}
+			if (linkModel.legend != null) {
+				viewHolder.linkDesc.setText(linkModel.legend);
+				viewHolder.linkDesc.setVisibility(View.VISIBLE);
+			}
+		} else {
+			viewHolder.linkDesc.setVisibility(View.GONE);
+			viewHolder.linkHref.setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * Class for interacting with the main interface of the service.
+	 */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		public void onServiceConnected(ComponentName className, IBinder iService) {
+
+			// Get the service from the binder
+			service = ((AndroidOswService.LocalBinder) iService).getService();
+
+			// Keep track the connectivity to display at title bar
+			service.addConnectionStateListener(connectionListener);
+			service.addConnectionProcessListener(connectionListener);
+
+			// Update the activity based on the current state
+			if (service.isConnected() && service.isAuthenticated()) {
+				connectionListener.onStateChanged(ConnectionState.connected);
+			} else {
+				connectionListener.onStateChanged(ConnectionState.disconnected);
+			}
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			//
+		}
+	};
+	
+	private class ViewHolder extends CommonViewHolder {
+
+		final TextView actorName, title, status, visibleTo, recipients, date, pictureDesc, linkHref, linkDesc, jid;
+		final ImageView avatar, picture, availability;
+		final LinearLayout userInfo, pictureContainer, shoutedTo;
+		final Button shoutButton;
+
+		public ViewHolder(Activity activity) {
+			super(activity);
+
+			userInfo = (LinearLayout) findViewById(R.id.userInfo);
+			pictureContainer = (LinearLayout) findViewById(R.id.pictureContainer);
+			jid = (TextView) findViewById(R.id.jid);
+			actorName = (TextView) findViewById(R.id.name);
+			availability = (ImageView) findViewById(R.id.availability);
+			date = (TextView) findViewById(R.id.date);
+			visibleTo = (TextView) findViewById(R.id.visibleTo);
+			status = (TextView) findViewById(R.id.status);
+			shoutedTo = (LinearLayout) findViewById(R.id.shoutedTo);
+			recipients = (TextView) findViewById(R.id.recipients);
+			picture = (ImageView) findViewById(R.id.pictureShared);
+			avatar = (ImageView) findViewById(R.id.avatar);
+			pictureDesc = (TextView) findViewById(R.id.imageDesc);
+			linkHref = (TextView) findViewById(R.id.link);
+			linkDesc = (TextView) findViewById(R.id.linkDesc);
+			title = (TextView) findViewById(R.id.left_text);
+			shoutButton = (Button) findViewById(R.id.shoutButton);
+
+		}
+	}
+
+	private class Model {
+		String jid;
+		String author;
+		String status;
+		Date published;
+		Drawable avatar;
+		List<String> recipients = new ArrayList<String>();
+		List<String> visibility = new ArrayList<String>();
+		List<PictureModel> pictures = new ArrayList<PictureModel>();
+		List<LinkModel> links = new ArrayList<LinkModel>();
+	}
+
+	private class PictureModel {
+		String uri;
+		String legend;
+		String title;
+		Drawable drawable;
+	}
+
+	private class LinkModel {
+		String uri;
+		String title;
+		String legend;
+	}
+}

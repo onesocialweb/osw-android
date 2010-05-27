@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">OneSocialWeb</string>
+	
+    <!-- Activities -->
+    
+	<string name="set_preference">Set Preferences</string>
+	<string name="settings_account">User Account Settings</string>
+	<string name="view_activity">Activity notification</string>
+	<string name="inbox">Inbox</string>
+	<string name="profile">Profile</string>
+	<string name="contacts">Contacts</string>
+	<string name="composer">Composer</string>
+	
+	<!-- Preferences  -->
+    <string name="autostart_preferences">Auto Start</string>
+    <string name="title_1_preference">Start at boot</string>
+    <string name="summary_1_preference">Start OneSocialWeb when your phone boots</string>
+    
+    <string name="login_preferences">Login</string> 
+    <string name="title_2_preference">Account settings</string>
+    <string name="summary_2_preference">Modify the user account name and password</string>
+   
+   	<string name="inbox_notification_preferences">Notifications</string> 
+    <string name="title_3_preference">Notification settings</string>
+    <string name="summary_3_preference">Customize the inbox notifications</string>
+    
+   	<string name="about_preferences">About</string>
+   	<string name="title_4_preference">About OneSocialWeb</string>
+   	<string name="summary_4_preference">Learn more about the project on our website</string>
+  
+	<string name="notification_vibrate_preferences">Vibrate settings</string>
+    <string name="title_notification_vibration">Vibrate</string>
+    <string name="summary_notification_vibration">Vibrate for incoming notifications</string>
+    
+    <string name="pref_title_notification_vibrate_pattern">Vibrate pattern</string>
+    <string name="pref_summary_notification_vibrate_pattern">Set the vibration pattern</string>
+    
+    <string name="notification_ringtone_preferences">Notification Settings</string>
+    <string name="title_notification_ringtone">Notification Sound</string>
+    <string name="summary_notification_ringtone">Set your notification sound form incoming activities</string>
+    
+    
+    <string name="title_notification_flash_led">Blink LED</string>
+    <string name="summary_notification_flash_led">Blink LED when a new notification is received</string>
+
+    <string name="notification_flash_led_preferences">LED settings</string>
+ 	<string name="pref_title_notification_led_color">Color of LED</string>
+  	<string name="pref_summary_notification_led_color">Set the color of the notification LED</string>
+    
+    <!-- Buttons -->
+	<string name="ok_button">OK</string>
+	<string name="login_button">Login</string>
+	<string name="cancel_button">Cancel</string>
+	<string name="shout_button">Shout</string>
+	<string name="share_button">Share</string>
+	<string name="follow_button">Follow</string>
+	<string name="unfollow_button">Unfollow</string>
+	<string name="create_list">Create new list</string>
+	
+	<!-- Tabs -->
+	<string name="summary">Summary</string>
+	<string name="activities">Activities</string>
+	<string name="lists">Lists</string>
+	
+	<!-- Menus -->
+	<string name="settings">Settings</string>
+	<string name="exit">Exit</string>
+	
+	<!-- Dialogs -->
+	<string name="updating_status">Updating your status...</string>
+	<string name="refreshing_inbox">Refreshing your inbox...</string>
+	<string name="displaying_activity">Displaying activity...</string>
+	<string name="closed_osw">OneSocialWeb has been closed.</string>
+	<string name="following">Following. Please wait...</string>
+	<string name="unable_to_follow">Unable to follow that user.</string>
+	<string name="unfollowing">Unfollowing. Please wait...</string>
+	<string name="unable_to_unfollow">Unable to unfollow that user.</string>
+	<string name="adding_person">Adding person to the list...</string>
+	<string name="removing_person">Removing person from the list...</string>
+	<string name="creating_list">Creating the list...</string>
+	<string name="sharing">Sharing...</string>
+	<string name="add_recipient">Add recipient</string>
+	<string name="attempting_reconnect">Attempting to reconnect</string>
+	
+	<!-- Errors -->
+	<string name="error_add_user_to_list">Oops, could not add user to the list.</string>
+	<string name="error_remove_user_from_list">Oops, could not remove user from the list.</string>
+	<string name="error_create_list">Oops, could not create a new list.</string>
+	<string name="error_empty_update">Is that really all what you have to say?</string>
+	<string name="error_unable_to_share">Connection unavailable, unable to share this activity</string>
+	
+	<!-- Instructions -->
+	<string name="add_or_remove">Add or remove this person from your lists below.</string>
+	<string name="specify_user_domain">Please use the format user@domain.</string>
+	<string name="no_activities">Currently no activities available.</string>
+	<string name="no_profile">Currently no profile available.</string>
+	
+	<!-- Field labels -->
+	<string name="login">Username:&#160;</string>
+	<string name="password">Password:&#160;</string>
+	<string name="shout">Shout to:&#160;</string>
+	<string name="to">To:&#160;</string>
+	<string name="on_your_lists">On your lists:&#160;</string>
+	
+	<string name="bio">Bio</string>
+	<string name="full_name">Full name&#160;</string>
+	<string name="nick_name">Nick name&#160;</string>
+	<string name="birthday">Birthday&#160;</string>
+	<string name="anniversary">Anniversary&#160;</string>
+	<string name="gender">Gender&#160;</string>
+	<string name="preferred_username">Preferred username&#160;</string>
+	
+	
+	<!-- Data values -->
+	<string name="everyone">Everyone</string>
+	<string name="visible_to_everyone">Visible to \'Everyone\'</string>
+	<string name="following_label">Following</string>
+	
+	<!-- Field hints -->
+	<string name="search_user">Search new user</string>
+	<string name="user_at_domain">user@domain</string>
+	<string name="whats_up">What\'s up?</string>
+	
+	<!-- Bits -->
+	<string name="at">at</string>
+	<string name="today_at">Today at</string>
+	<string name="you_have">You have</string>
+	<string name="connections">connections</string>
+	<string name="listed_as">Listed as:</string>
+	<string name="visible_to">Visible to </string>
+
+</resources>

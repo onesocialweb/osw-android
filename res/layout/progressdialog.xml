@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_horizontal"
+        android:padding="10dip">
+
+        <ProgressBar android:id="@+id/progress_bar"
+                android:layout_alignParentRight="true" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:gravity="center_vertical"
+                android:visibility="visible" android:paddingRight="10px" />
+                
+        <TextView android:text="@string/attempting_reconnect" android:id="@+id/dialogText"
+                android:layout_width="wrap_content"
+                android:paddingRight="10dip" android:layout_height="wrap_content" />
+
+</LinearLayout>
+

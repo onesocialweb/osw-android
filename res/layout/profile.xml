@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical" android:id="@+id/root" android:background="@color/OSWbackground">
+	
+	<LinearLayout android:layout_width="fill_parent" android:id="@+id/content"
+		android:layout_height="fill_parent" android:orientation="vertical">
+	
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:layout_margin="0px" android:background="@color/OSWtopbar">
+	
+			<LinearLayout android:orientation="horizontal"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:padding="10dip">
+	
+				<ImageView android:id="@+id/avatar" android:layout_width="45dip"
+					android:layout_height="45dip" android:layout_marginRight="6dip" />
+	
+				<LinearLayout android:orientation="vertical"
+					android:layout_width="fill_parent" android:layout_height="wrap_content">
+	
+					<LinearLayout android:orientation="horizontal"
+						android:layout_width="fill_parent" 
+						android:layout_weight="1"
+						android:layout_height="wrap_content">
+						
+						<ImageView android:id="@+id/availability" 
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="1dp"
+							android:layout_marginLeft="6dp" 
+							android:src="@drawable/ic_notavailable"
+							android:visibility="gone" />
+					
+						<TextView android:id="@+id/name"
+							android:layout_width="fill_parent" android:paddingLeft="6dip" android:paddingRight="6dip"
+							android:layout_height="wrap_content" style="@style/nameProfile" />
+					
+					</LinearLayout>
+					
+					<TextView android:id="@+id/jid"
+						android:layout_width="fill_parent" android:paddingLeft="6dip" android:paddingRight="6dip"
+						android:layout_height="wrap_content" style="@style/jidProfile" />
+	
+				</LinearLayout>
+			</LinearLayout>
+	
+			<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@android:id/tabhost" android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+				
+				<LinearLayout android:orientation="vertical"
+					android:layout_width="fill_parent" android:layout_height="fill_parent">
+					
+					<TabWidget android:id="@android:id/tabs"
+						android:layout_width="fill_parent" android:layout_height="wrap_content" />
+					
+					<FrameLayout android:id="@android:id/tabcontent"
+						android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@color/OSWbackground">
+						
+						<RelativeLayout android:id="@+id/summary" android:layout_width="fill_parent" android:layout_height="fill_parent" >
+						
+							<LinearLayout android:id="@+id/buttons"
+								android:orientation="horizontal" android:layout_width="fill_parent" android:padding="6dp" android:visibility="gone" android:layout_alignParentBottom="true"
+								android:layout_height="wrap_content" android:background="@color/OSWbuttonbar">
+						
+								<Button android:id="@+id/followButton" android:layout_width="fill_parent"
+									android:layout_height="wrap_content" android:layout_weight="50"
+									android:text="@string/follow_button" android:visibility="gone">
+								</Button>
+								<Button android:id="@+id/unfollowButton" android:layout_width="fill_parent"
+									android:layout_height="wrap_content" android:layout_weight="50"
+									android:text="@string/unfollow_button" android:visibility="gone">
+								</Button>
+								<Button android:id="@+id/shoutButton" android:layout_width="fill_parent"
+									android:layout_height="wrap_content" android:layout_weight="50"
+									android:text="@string/shout_button" android:visibility="gone">
+								</Button>
+							</LinearLayout>
+							
+							<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_above="@+id/buttons">
+						
+								<LinearLayout 
+									android:orientation="vertical" android:visibility="visible" 
+									android:paddingTop="10dp" android:padding="10dp"  
+									android:layout_width="fill_parent" android:layout_height="fill_parent" 
+									android:background="@color/OSWbackground" 
+									android:scrollbars="vertical" 
+									android:fadeScrollbars="true">
+			
+									<LinearLayout android:orientation="vertical"
+										android:layout_width="fill_parent" android:layout_height="wrap_content">
+					
+										<TextView android:id="@+id/BioTitle" android:visibility="gone"
+											android:layout_width="wrap_content" android:layout_height="wrap_content"
+											android:text="@string/bio" android:textColor="@color/black" />
+					
+										<TextView android:id="@+id/ProfileBio" android:visibility="gone"
+											android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/bio" />
+											
+									</LinearLayout>
+									
+									<LinearLayout android:orientation="horizontal"
+										android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+					
+										<ImageView android:id="@+id/ProfileFollowingTick"
+											android:layout_width="20dip" android:layout_height="20dip"
+											android:layout_marginRight="0dip" android:src="@drawable/btn_check_buttonless_on"
+											android:visibility="gone" />
+					
+										<TextView android:id="@+id/ProfileFollowing"
+											android:visibility="gone" android:layout_width="wrap_content"
+											android:layout_height="wrap_content" android:textSize="14sp"
+											android:text="@string/following_label" android:textColor="@color/grey4" />
+									
+									</LinearLayout>
+									
+									<LinearLayout android:orientation="horizontal"
+										android:layout_width="fill_parent" android:layout_height="wrap_content">
+										
+										<TextView android:id="@+id/listedLabel"
+											android:visibility="gone" android:layout_width="wrap_content"
+											android:layout_height="wrap_content"
+											android:textColor="@color/grey3" android:text="@string/on_your_lists" />
+										<TextView android:id="@+id/listed"
+											android:visibility="gone" android:layout_width="fill_parent"
+											android:layout_height="wrap_content" android:textColor="@color/grey4"
+											android:singleLine="false" />
+											
+									</LinearLayout>
+									
+								</LinearLayout>
+							
+							</ScrollView>
+	
+						</RelativeLayout>
+						
+						<LinearLayout android:background="@color/OSWbackground"  android:id="@+id/posts"
+							android:orientation="vertical" android:visibility="visible"
+							android:layout_width="fill_parent" android:layout_height="fill_parent">
+	
+							<TextView android:id="@+id/noPostAvailable"
+								android:padding="6dip" android:visibility="gone"
+								android:layout_width="wrap_content" android:layout_height="wrap_content"
+								android:textStyle="italic" android:text="@string/no_activities" />
+							
+							<ListView android:id="@+id/postslist"
+								android:layout_width="fill_parent" 
+								android:layout_height="fill_parent"
+								android:layout_weight="50" 
+								android:scrollbars="vertical" 
+								android:divider="@color/grey1"
+								android:dividerHeight="1dip" 
+								android:listSelector="@drawable/list_selector"
+								android:cacheColorHint="#00000000"
+								android:fadeScrollbars="true" />
+							
+						</LinearLayout>
+						
+						<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/fullProfile">
+						
+							<LinearLayout android:background="@color/OSWbackground"
+								android:orientation="vertical" android:layout_width="fill_parent"
+								android:layout_height="fill_parent" 
+								android:padding="10dp" android:scrollbars="vertical" 
+								android:fadeScrollbars="true" >
+		
+								<TextView android:id="@+id/noProfileAvailable"
+									android:visibility="gone" android:layout_width="wrap_content"
+									android:layout_height="wrap_content" android:textStyle="italic"
+									android:text="@string/no_profile" android:textColor="@color/grey4"/>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/fullNameTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content"
+										android:text="@string/full_name" android:textColor="@color/grey3"
+										style="@style/table"/>
+									<TextView android:id="@+id/fullName" android:visibility="gone" android:textColor="@color/grey4"
+										android:layout_width="fill_parent" android:layout_height="wrap_content" 
+										style="@style/table"/>
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/nicknameTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										android:text="@string/nick_name" android:textColor="@color/grey3"
+										style="@style/table"/>
+									<TextView android:id="@+id/nickname" android:visibility="gone" android:textColor="@color/grey4"
+										android:layout_width="fill_parent" android:layout_height="wrap_content"
+										style="@style/table" />
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/birthdayTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										android:text="@string/birthday" android:textColor="@color/grey3"
+										style="@style/table"/>
+									<TextView android:id="@+id/birthday" android:visibility="gone" android:textColor="@color/grey4"
+										android:layout_width="fill_parent" android:layout_height="wrap_content"
+										style="@style/table" />
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/anniversaryTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										android:text="@string/anniversary" android:textColor="@color/grey3"
+										style="@style/table" />
+									<TextView android:id="@+id/anniversary" android:textColor="@color/grey4"
+										android:visibility="gone" android:layout_width="fill_parent"
+										android:layout_height="wrap_content"
+										style="@style/table" />
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/genderTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										android:text="@string/gender" android:textColor="@color/grey3"
+										style="@style/table"/>
+									<TextView android:id="@+id/gender" android:visibility="gone" android:textColor="@color/grey4"
+										android:layout_width="fill_parent" android:layout_height="wrap_content"
+										style="@style/table" />
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/bioTitle2"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										android:text="@string/bio" android:textColor="@color/grey3"
+										style="@style/table"/>
+									<TextView android:id="@+id/bio2" android:visibility="gone" android:textColor="@color/grey4"
+										android:layout_width="fill_parent" android:layout_height="wrap_content" 
+										style="@style/table" />
+								</LinearLayout>
+		
+								<LinearLayout android:orientation="horizontal"
+									android:layout_width="fill_parent" android:layout_height="wrap_content">
+									<TextView android:id="@+id/prefUserNameTitle"
+										android:visibility="gone" android:layout_width="80dip"
+										android:layout_height="wrap_content" 
+										style="@style/table"
+										android:text="@string/preferred_username" android:textColor="@color/grey3"/>
+									<TextView android:id="@+id/prefUserName"
+										android:visibility="gone" android:layout_width="fill_parent" android:textColor="@color/grey4"
+										android:layout_height="wrap_content"
+										style="@style/table" />
+								</LinearLayout>
+		
+							</LinearLayout>
+						
+						</ScrollView>
+						
+						<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/managePerson" >
+						
+							<LinearLayout android:background="@color/OSWbackground" android:id="@+id/managePersonLayout" 
+								android:orientation="vertical" android:layout_width="fill_parent"
+								android:layout_height="fill_parent" 
+								android:padding="10dp" android:scrollbars="vertical" 
+								android:fadeScrollbars="true">
+							</LinearLayout>
+							
+						</ScrollView>
+						
+					</FrameLayout>
+					
+				</LinearLayout>
+				
+			</TabHost>
+	
+		</LinearLayout>
+	
+	</LinearLayout>
+
+</RelativeLayout> 

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	android:padding="6dip">
+	
+	<ImageView android:id="@+id/picture" android:layout_width="40dip"
+		android:layout_height="45dip" android:layout_marginRight="10dip" />
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="0dip" 
+		android:layout_weight="1"
+		android:layout_height="wrap_content">
+
+		<LinearLayout android:orientation="horizontal"
+			android:layout_width="fill_parent" 
+			android:layout_weight="1"
+			android:layout_height="wrap_content">
+			
+			<ImageView android:id="@+id/availability" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="6dip" 
+				android:layout_marginTop="1dip" 
+				android:src="@drawable/ic_notavailable" />
+		
+			<TextView android:id="@+id/author" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_weight="1"
+			    android:singleLine="true"
+			    style="@style/author"/>
+	
+			<TextView android:id="@+id/date" 
+				android:singleLine="true"
+				android:gravity="right"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_weight="2"
+				android:layout_alignParentRight="true"
+				style="@style/info"/>
+				
+		</LinearLayout>
+		
+		<LinearLayout android:id="@+id/shoutedTo"
+			android:orientation="horizontal"
+			android:layout_width="fill_parent" 
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:visibility="gone">
+			
+			<TextView android:id="@+id/tolabel" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:text="@string/to"
+				style="@style/recipients"/>
+			
+			<TextView android:id="@+id/recipients" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_weight="1"
+				android:singleLine="false"
+				style="@style/recipients"/>
+				
+		</LinearLayout>
+		
+		<LinearLayout android:orientation="vertical"
+			android:layout_width="fill_parent" 
+			android:layout_weight="1"
+			android:layout_height="wrap_content">
+		
+			<TextView android:id="@+id/status" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_weight="1"
+				android:singleLine="false"
+				android:textColor="@drawable/list_view_row_text"
+				style="@style/statusText"
+				 />		
+		
+			<ImageView android:id="@+id/attachment" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="6dip" 
+				android:visibility="gone"
+				android:src="@drawable/ic_camera"
+				android:paddingTop="5dip" />
+		
+		</LinearLayout>	
+		
+	</LinearLayout>
+	
+</LinearLayout>

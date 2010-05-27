@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/autostart_preferences">
+
+		<CheckBoxPreference android:key="checkbox_preference"
+			android:title="@string/title_1_preference" android:summary="@string/summary_1_preference" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/login_preferences">
+
+		<PreferenceScreen android:key="log_preference"
+			android:title="@string/title_2_preference" android:summary="@string/summary_2_preference" />
+	
+		<intent android:action="android.intent.action.VIEW"
+			android:data="http://www.android.com" />
+
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="@string/inbox_notification_preferences">
+		
+	</PreferenceCategory>
+
+
+</PreferenceScreen>

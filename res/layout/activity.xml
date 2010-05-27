@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@color/OSWbackground"
+	android:orientation="vertical" android:id="@+id/root" android:padding="0dip">
+
+	<LinearLayout android:id="@+id/buttons"
+		android:orientation="horizontal" android:layout_width="fill_parent" android:padding="6dp" android:layout_alignParentBottom="true"
+		android:layout_height="wrap_content" android:background="@color/OSWbuttonbar">
+
+		<Button android:id="@+id/shoutButton" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_weight="1"
+			android:text="@string/shout_button"/>
+			
+	</LinearLayout>
+
+	<ScrollView android:layout_above="@id/buttons"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:fillViewport="false">
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:layout_margin="3dp" android:padding="5dp">
+
+			<LinearLayout android:id="@+id/userInfo" android:layout_marginTop="5dp"
+				android:orientation="horizontal" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:clickable="true" android:background="@drawable/selector_button">
+
+				<ImageView android:id="@+id/avatar" android:layout_width="45dip"
+					android:layout_height="45dip" android:layout_marginRight="15dip" />
+
+				<LinearLayout android:orientation="vertical"
+					android:layout_width="fill_parent" android:layout_height="wrap_content">
+
+					<LinearLayout android:orientation="horizontal"
+						android:layout_width="fill_parent" 
+						android:layout_weight="1"
+						android:layout_height="wrap_content">
+						
+						<ImageView android:id="@+id/availability" 
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="1dp"
+							android:src="@drawable/ic_notavailable"
+							android:visibility="gone" />
+					
+						<TextView android:id="@+id/name"
+							android:layout_width="fill_parent" android:paddingLeft="6dip" android:paddingRight="6dip"
+							android:layout_height="wrap_content" style="@style/authorlink" />
+					
+					</LinearLayout>
+						
+					<TextView android:id="@+id/jid" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" style="@style/jid"/>
+
+				</LinearLayout>
+				
+			</LinearLayout>
+
+			<LinearLayout android:id="@+id/message"
+				android:orientation="vertical" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:padding="5dp">
+
+				<LinearLayout android:id="@+id/shoutedTo"
+					android:orientation="horizontal"
+					android:layout_width="fill_parent" 
+					android:layout_weight="1"
+					android:layout_height="wrap_content"
+					android:visibility="gone">
+					
+					<TextView android:id="@+id/tolabel" 
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content" 
+						android:text="To: "
+						style="@style/recipients"/>
+					
+					<TextView android:id="@+id/recipients" 
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content" 
+						android:layout_weight="1"
+						android:singleLine="false"
+						style="@style/recipients"/>
+						
+				</LinearLayout>
+					
+				<TextView android:id="@+id/status" android:layout_width="fill_parent"
+					android:layout_height="fill_parent" android:paddingTop="10dip"
+					android:gravity="left" android:textStyle="italic" style="@style/statusTextBig" />
+					
+				<LinearLayout android:id="@+id/infoContainer" android:orientation="horizontal"
+					android:layout_width="fill_parent" android:layout_marginTop="10dip"
+					android:layout_height="wrap_content">
+							 
+					<ImageView android:id="@+id/infoIcon" 
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginRight="10dip" 
+						android:src="@drawable/ic_info" />
+						
+					<TextView android:id="@+id/date" android:layout_width="wrap_content"
+						android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="marquee" style="@style/info"/>
+						
+					<TextView android:id="@+id/visibleTo" android:layout_width="wrap_content"
+						android:layout_height="wrap_content" style="@style/info"
+						android:singleLine="false" 
+						android:visibility="gone"
+						android:ellipsize="marquee" />
+				
+				</LinearLayout>
+						
+				<TextView android:id="@+id/imageDesc" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:gravity="left"
+					android:textSize="16sp" android:padding="6dip" android:visibility="gone" />
+			
+				<LinearLayout android:id="@+id/pictureContainer" android:orientation="horizontal"
+					android:layout_width="fill_parent" android:layout_marginTop="10dip"
+					android:layout_height="wrap_content" android:visibility="gone">
+					
+					<ImageView android:id="@+id/attachmentIcon" 
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginRight="10dip" 
+						android:src="@drawable/ic_camera" />
+					
+					<ImageView android:id="@+id/pictureShared"
+						android:layout_width="125dip" android:layout_height="125dip"
+						android:maxWidth="125dip" android:maxHeight="125dip" android:scaleType="fitStart"
+						/>
+								
+				</LinearLayout>
+			
+				<TextView android:id="@+id/link" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:gravity="center_horizontal"
+					android:autoLink="web" android:textColorLink="#ffb400"
+					android:textSize="16sp" android:padding="6dip" android:visibility="gone" />
+	
+				<TextView android:id="@+id/linkDesc" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:gravity="left"
+					android:textSize="16sp" android:padding="6dip" android:visibility="gone" />	
+					
+			</LinearLayout>
+
+		</LinearLayout>
+		
+	</ScrollView>
+
+</RelativeLayout> 

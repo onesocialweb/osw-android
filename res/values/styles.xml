@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<resources>
+	<!-- The main OneSocialWeb theme -->    
+    <style name="OSWTheme">
+		<item name="android:windowTitleStyle">@style/OSWTitle</item>
+		<item name="android:windowTitleBackgroundStyle">@style/OSWTitleBackground</item>
+		<item name="android:windowBackground">@color/grey4</item>
+		<item name="android:textAppearance">@style/OSWTextAppearance</item>
+	</style>  
+	
+	<style name="OSWTextAppearance" parent="@android:style/TextAppearance">
+		<item name="android:textSize">14sp</item>
+		<item name="android:textColor">@color/grey4</item>
+	</style>
+	
+	<style name="statusText">
+		<item name="android:lineSpacingMultiplier">1.13</item>
+		<item name="android:textColor">@color/grey4</item>
+	</style>
+	
+	<style name="statusTextBig" parent="@style/statusText">
+		<item name="android:textSize">18sp</item>
+		<item name="android:background">@color/white</item>
+		<item name="android:padding">10dp</item>
+		<item name="android:layout_marginTop">10dp</item>
+		<item name="android:layout_marginBottom">10dp</item>
+	</style>
+	
+	<style name="bio" parent="@style/statusText">
+		<item name="android:textSize">15sp</item>
+		<item name="android:background">@color/white</item>
+		<item name="android:padding">10dp</item>
+		<item name="android:layout_marginTop">5dp</item>
+		<item name="android:layout_marginBottom">10dp</item>
+	</style>
+
+	<style name="author">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/grey3</item>
+	</style>
+	
+	<style name="nameProfile">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/white</item>
+	</style>
+	
+	<style name="jidProfile">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textColor">@color/white</item>
+	</style>
+	
+	<style name="authorlink">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/OSWblue</item>
+	</style>
+	
+	<style name="jid">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textColor">@color/grey3</item>
+	</style>
+	
+	<style name="recipients">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+		<item name="android:textColor">@color/grey5</item>
+	</style>
+	
+	<style name="activityLight">
+		<item name="android:background">#ddd</item>
+	</style>
+	
+	<style name="info">
+		<item name="android:textColor">#888</item>
+		<item name="android:textSize">11sp</item>
+		<item name="android:lineSpacingMultiplier">1.15</item>
+	</style>
+
+    <style name="OSWTitle">
+		<item name="android:textColor">#ffffff</item> 
+	</style>
+	
+	<style name="OSWTitleBackground">
+		<item name="android:background">#444</item> 
+	</style>
+	
+	<style name="smallText" parent="@android:style/Widget.TextView">
+		<item name="android:textColor">#777</item>
+		<item name="android:textSize">12dip</item> 
+	</style>
+	
+	<style name="table">
+		<item name="android:lineSpacingMultiplier">1.15</item>
+	</style>
+     
+</resources>  

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:background="#333333">
+	<PreferenceCategory android:title="@string/autostart_preferences">
+
+		<CheckBoxPreference android:key="checkbox_preference"
+			android:title="@string/title_1_preference" android:summary="@string/summary_1_preference" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/login_preferences">
+
+		<PreferenceScreen android:key="log_preference"
+			android:title="@string/title_2_preference" android:summary="@string/summary_2_preference" />
+
+		<intent android:action="android.intent.action.VIEW"
+			android:data="http://www.android.com" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/inbox_notification_preferences">
+
+		<!--
+			This PreferenceScreen tag serves as a screen break (similar to page
+			break in word processing). Like for other preference types, we assign
+			a key here so it is able to save and restore its instance state.
+		-->
+		<PreferenceScreen android:key="notification_preference"
+			android:title="@string/title_3_preference" android:summary="@string/summary_3_preference">
+			
+			<PreferenceCategory android:title="@string/notification_ringtone_preferences">
+				<RingtonePreference android:key="notification_ringtone"
+					android:title="@string/title_notification_ringtone"
+					android:summary="@string/summary_notification_ringtone"
+					android:ringtoneType="notification" />
+			</PreferenceCategory>
+			
+			<PreferenceCategory android:title="@string/notification_vibrate_preferences">
+
+				<CheckBoxPreference android:key="notification_vibration"
+					android:title="@string/title_notification_vibration"
+					android:summary="@string/summary_notification_vibration" />
+
+				<ListPreference android:key="pref_key_notification_vibrate_pattern"
+					android:dependency="notification_vibration" 
+					android:title="@string/pref_title_notification_vibrate_pattern"
+					android:defaultValue="default"
+					android:summary="@string/pref_summary_notification_vibrate_pattern"
+					android:entries="@array/pref_notification_vibrate_pattern_entries"
+					android:entryValues="@array/pref_notification_vibrate_pattern_values"
+					android:dialogTitle="@string/pref_title_notification_vibrate_pattern" />
+
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/notification_flash_led_preferences">
+				<CheckBoxPreference android:key="notification_flash_led"
+					android:title="@string/title_notification_flash_led"
+					android:summary="@string/summary_notification_flash_led" />
+
+				<ListPreference android:key="pref_key_notification_led_color"
+					android:dependency="notification_flash_led"
+					android:defaultValue="green"
+					android:title="@string/pref_title_notification_led_color"
+					android:summary="@string/pref_summary_notification_led_color"
+					android:entries="@array/pref_notification_led_color_entries"
+					android:entryValues="@array/pref_notification_led_color_values"
+					android:dialogTitle="@string/pref_title_notification_led_color" />
+
+			</PreferenceCategory>
+
+		</PreferenceScreen>
+
+
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="@string/about_preferences">
+
+		<PreferenceScreen android:key="about_preference"
+			android:title="@string/title_4_preference" android:summary="@string/summary_4_preference" />
+
+	</PreferenceCategory>
+
+
+
+</PreferenceScreen>
