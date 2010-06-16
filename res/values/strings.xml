@@ -50,6 +50,7 @@
     
     <!-- Buttons -->
 	<string name="ok_button">OK</string>
+	<string name="delete_button">Delete</string>
 	<string name="login_button">Login</string>
 	<string name="cancel_button">Cancel</string>
 	<string name="shout_button">Shout</string>
@@ -80,6 +81,7 @@
 	<string name="removing_person">Removing person from the list...</string>
 	<string name="creating_list">Creating the list...</string>
 	<string name="sharing">Sharing...</string>
+	<string name="deleting">Deleting...</string>
 	<string name="add_recipient">Add recipient</string>
 	<string name="attempting_reconnect">Attempting to reconnect</string>
 	
@@ -89,12 +91,15 @@
 	<string name="error_create_list">Oops, could not create a new list.</string>
 	<string name="error_empty_update">Is that really all what you have to say?</string>
 	<string name="error_unable_to_share">Connection unavailable, unable to share this activity</string>
+	<string name="error_unable_to_delete">Connection unavailable, unable to delete this activity</string>
+	<string name="error_username_password_empty">Username and password can not be empty values</string>
 	
 	<!-- Instructions -->
 	<string name="add_or_remove">Add or remove this person from your lists below.</string>
 	<string name="specify_user_domain">Please use the format user@domain.</string>
 	<string name="no_activities">Currently no activities available.</string>
 	<string name="no_profile">Currently no profile available.</string>
+	<string name="supply_username_domain">You must specify user@domain to login.</string>
 	
 	<!-- Field labels -->
 	<string name="login">Username:&#160;</string>

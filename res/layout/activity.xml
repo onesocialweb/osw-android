@@ -10,6 +10,10 @@
 		<Button android:id="@+id/shoutButton" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:layout_weight="1"
 			android:text="@string/shout_button"/>
+		
+		<Button android:id="@+id/deleteButton" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_weight="1"
+			android:text="@string/delete_button" android:visibility="gone"/>
 			
 	</LinearLayout>
 
@@ -73,12 +77,13 @@
 						android:text="To: "
 						style="@style/recipients"/>
 					
-					<TextView android:id="@+id/recipients" 
+					<LinearLayout android:id="@+id/recipients"
+						android:orientation="vertical"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content" 
 						android:layout_weight="1"
 						android:singleLine="false"
-						style="@style/recipients"/>
+						android:paddingRight="0dp"/>
 						
 				</LinearLayout>
 					
