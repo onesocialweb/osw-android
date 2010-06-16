@@ -16,11 +16,8 @@
  */
 package org.onesocialweb.client.android.activities;
 
-import org.onesocialweb.client.android.Onesocialweb;
 import org.onesocialweb.client.android.OswBroadcastReceiver;
 import org.onesocialweb.client.android.R;
-import org.onesocialweb.client.android.R.id;
-import org.onesocialweb.client.android.R.layout;
 import org.onesocialweb.client.android.service.AndroidOswService;
 import org.onesocialweb.client.exception.ConnectionRequired;
 
@@ -33,7 +30,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -83,12 +79,12 @@ public class AccountSettings extends Activity {
 
 				if (userNamePref == "empty" || passwordPref == "empty" || userNamePref.length() == 0
 						|| passwordPref.length() == 0) {
-					Toast.makeText(AccountSettings.this, "Username and password can not be empty values",
+					Toast.makeText(AccountSettings.this, R.string.error_username_password_empty,
 							Toast.LENGTH_SHORT).show();
 				}
 				// The user must login using the full jid
 				else if (userNamePref.indexOf("@") == -1) {
-					Toast.makeText(AccountSettings.this, "You must specify user@domain to login", Toast.LENGTH_LONG)
+					Toast.makeText(AccountSettings.this, R.string.supply_username_domain, Toast.LENGTH_LONG)
 							.show();
 				} else { 
 						new Task().execute();	
@@ -125,7 +121,6 @@ public class AccountSettings extends Activity {
 			// established, giving us the service object we can use to
 			// interact with the service.
 
-			Log.d(Onesocialweb.LOGTAG, "Try to bind AndrodOswService from  EditPreferences activity");
 			service = ((AndroidOswService.LocalBinder) iService).getService();
 			if (service.isConnected() && service.isAuthenticated() ) {
 				// Before disconnect and reconnect as the new user, disable

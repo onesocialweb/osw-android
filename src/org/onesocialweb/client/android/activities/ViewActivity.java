@@ -42,22 +42,28 @@ import org.onesocialweb.model.atom.AtomLink;
 import org.onesocialweb.model.atom.AtomReplyTo;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ViewActivity extends Activity {
 
@@ -83,7 +89,10 @@ public class ViewActivity extends Activity {
 
 	// A listener for connection state changes (to update the UI)
 	private ConnectionStatusListener connectionListener;
-
+	
+	private static final int DIALOG_DELETING = 0;
+	private boolean isOwner = false;
+	
 	// The id of the activity we must display
 	private String activityId;
 	
@@ -134,11 +143,9 @@ public class ViewActivity extends Activity {
 		// Get the intent which has called this activity in order to get the
 		activityId = getIntent().getStringExtra(PARAM_ACTIVITY_ID);
 		
-		// Retrieve the activity from the shared object storage 
-		setActivity((ActivityEntry) onesocialweb.getSharedObject(activityId));
-
 		// Bind with the Notification service
 		bindService(new Intent(ViewActivity.this, AndroidOswService.class), mConnection, Context.BIND_AUTO_CREATE);
+
 	}
 
 	@Override
@@ -194,6 +201,15 @@ public class ViewActivity extends Activity {
 
 	private void setActivity(ActivityEntry activity) {
 		model = parseActivity(activity);
+		
+		// Check if the author is the same as person logged in
+		if (activity.hasActor() && activity.getActor().hasUri()) {
+			
+			if (activity.getActor().getUri().equals(service.getBareJID())) {
+				isOwner = true;
+			} 
+		}
+		
 		render();
 	}
 
@@ -329,16 +345,32 @@ public class ViewActivity extends Activity {
 		// Display the recipients
 		if (model.recipients.size() > 0 && model.recipients != null) {
 			viewHolder.shoutedTo.setVisibility(View.VISIBLE);
-			
+			viewHolder.recipients.removeAllViewsInLayout();
 			final Iterator<String> recipients = model.recipients.iterator();
-			StringBuffer recipientsText = new StringBuffer();
 			while (recipients.hasNext()) {
-				recipientsText.append(recipients.next());
-				if (recipients.hasNext()) {
-					recipientsText.append(", ");
-				}
+				// Show the new recipient to the user and enable to delete it
+				LayoutInflater inflater = this.getLayoutInflater();
+				final View rowView = inflater.inflate(R.layout.profilerecipient, null);
+				
+				TextView label = (TextView) rowView.findViewById(R.id.label);
+				label.setText(recipients.next());
+				ImageButton profileButton = (ImageButton) rowView.findViewById(R.id.profileButton);
+				
+				final String recipientJid = new String(label.getText().toString());
+				
+				profileButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ViewActivity.this, ProfileActivity.class);
+						intent.putExtra(ProfileActivity.PARAM_USER_JID, recipientJid);
+						startActivity(intent);
+					}
+				});
+				
+				// Add to the container
+				viewHolder.recipients.addView(rowView);
 			}
-			viewHolder.recipients.setText(recipientsText);
 		} else {
 			viewHolder.shoutedTo.setVisibility(View.GONE);	
 		}
@@ -422,8 +454,37 @@ public class ViewActivity extends Activity {
 			viewHolder.linkDesc.setVisibility(View.GONE);
 			viewHolder.linkHref.setVisibility(View.GONE);
 		}
+		
+		// if the author is the same as person logged in, show the delete button
+		if (isOwner) {
+			viewHolder.deleteButton.setVisibility(View.VISIBLE);
+			
+			// add click handler to the button
+			viewHolder.deleteButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// delete the activity
+					onDeleteActivity();
+				}
+			});
+		}
 	}
 
+	@Override
+	protected Dialog onCreateDialog(int id) {
+
+		switch (id) {
+			case DIALOG_DELETING: {
+				ProgressDialog dialog = new ProgressDialog(this);
+				dialog.setMessage(getResources().getText(R.string.deleting));
+				dialog.setIndeterminate(true);
+				dialog.setCancelable(true);
+				return dialog;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Class for interacting with the main interface of the service.
 	 */
@@ -440,7 +501,8 @@ public class ViewActivity extends Activity {
 
 			// Update the activity based on the current state
 			if (service.isConnected() && service.isAuthenticated()) {
-				connectionListener.onStateChanged(ConnectionState.connected);
+				connectionListener.onStateChanged(ConnectionState.connected); 
+				setActivity((ActivityEntry) onesocialweb.getSharedObject(activityId));
 			} else {
 				connectionListener.onStateChanged(ConnectionState.disconnected);
 			}
@@ -451,12 +513,71 @@ public class ViewActivity extends Activity {
 		}
 	};
 	
+	public void onDeleteActivity() {
+		
+		// Need to be connected
+		if (!service.isConnected() || !service.isAuthenticated()) {
+			showError(getResources().getString(R.string.error_unable_to_share));
+			return;
+		}
+
+		// Post the status update asynchronously
+		new AsyncDeleteActivity().execute();
+	}
+	
+	private class AsyncDeleteActivity extends AsyncTask<ActivityEntry, Void, Void> {
+
+		private boolean isDeleted = false;
+		
+		@Override
+		protected void onPreExecute() {
+			showDialog(DIALOG_DELETING);
+			super.onPreExecute();
+		}
+
+		@Override
+		protected Void doInBackground(ActivityEntry... activity) {			
+			try {
+				if (service.deleteActivity(activityId)) {
+					isDeleted = true;
+				}
+			} catch (Exception e) {}
+
+			// Back to the main activity: the inbox
+			if (isDeleted) {
+				Intent intent = new Intent(ViewActivity.this, InboxActivity.class);
+				startActivity(intent);
+				finish();
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// We are done
+			dismissDialog(DIALOG_DELETING);
+			if (!isDeleted) {
+				Toast.makeText(ViewActivity.this, getResources().getString(R.string.error_unable_to_delete), Toast.LENGTH_SHORT).show();
+			}
+			super.onPostExecute(result);
+		}
+
+	}
+	
+	private void showError(String error) {
+		Toast.makeText(
+				ViewActivity.this,
+				error,
+				Toast.LENGTH_SHORT).show();
+	}
+	
 	private class ViewHolder extends CommonViewHolder {
 
-		final TextView actorName, title, status, visibleTo, recipients, date, pictureDesc, linkHref, linkDesc, jid;
+		final TextView actorName, title, status, visibleTo, date, pictureDesc, linkHref, linkDesc, jid;
 		final ImageView avatar, picture, availability;
-		final LinearLayout userInfo, pictureContainer, shoutedTo;
-		final Button shoutButton;
+		final LinearLayout userInfo, pictureContainer, shoutedTo, recipients;
+		final Button shoutButton, deleteButton;
 
 		public ViewHolder(Activity activity) {
 			super(activity);
@@ -470,7 +591,7 @@ public class ViewActivity extends Activity {
 			visibleTo = (TextView) findViewById(R.id.visibleTo);
 			status = (TextView) findViewById(R.id.status);
 			shoutedTo = (LinearLayout) findViewById(R.id.shoutedTo);
-			recipients = (TextView) findViewById(R.id.recipients);
+			recipients = (LinearLayout) findViewById(R.id.recipients);
 			picture = (ImageView) findViewById(R.id.pictureShared);
 			avatar = (ImageView) findViewById(R.id.avatar);
 			pictureDesc = (TextView) findViewById(R.id.imageDesc);
@@ -478,6 +599,7 @@ public class ViewActivity extends Activity {
 			linkDesc = (TextView) findViewById(R.id.linkDesc);
 			title = (TextView) findViewById(R.id.left_text);
 			shoutButton = (Button) findViewById(R.id.shoutButton);
+			deleteButton = (Button) findViewById(R.id.deleteButton);
 
 		}
 	}

@@ -429,7 +429,6 @@ public class ComposeActivity extends Activity {
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View rowView = inflater.inflate(R.layout.deleterecipient, null);
 		
-		LinearLayout layout = (LinearLayout) rowView.findViewById(R.id.row);
 		TextView label = (TextView) rowView.findViewById(R.id.label);
 		label.setText(recipient);
 		ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.deleteButton);

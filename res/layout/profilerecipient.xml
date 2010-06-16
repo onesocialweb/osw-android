@@ -10,9 +10,10 @@
 		<TextView android:id="@+id/label"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:layout_weight="1" android:textColor="@color/grey4"/>
-		<ImageButton android:id="@+id/deleteButton"
+		<ImageButton android:id="@+id/profileButton"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_gravity="right" android:src="@drawable/ic_btn_delete" style="?android:attr/buttonStyleSmall"/>
+			android:layout_gravity="right" android:src="@drawable/ic_btn_profile" style="?android:attr/buttonStyleSmall"
+			/>
 	
 	</LinearLayout>
 

@@ -295,9 +295,9 @@ public class AndroidOswService extends Service implements OswService {
 	}
 
 	@Override
-	public boolean deleteActivity(String activityId) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean deleteActivity(String activityId) throws ConnectionRequired,
+	AuthenticationRequired, RequestException {
+		return service.deleteActivity(activityId);
 	}
 
 	@Override
@@ -767,7 +767,7 @@ public class AndroidOswService extends Service implements OswService {
 			loadPreferences();
 
 			// The user must login using the full jid
-			// TODO This filetring mut happen at UI.. not here !!!
+			// TODO This filtering must happen at UI.. not here !!!
 			if (jidPref.indexOf("@") == -1) {
 				Intent intent = new Intent(AndroidOswService.this, AccountSettings.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -784,7 +784,7 @@ public class AndroidOswService extends Service implements OswService {
 			// Connect the XMPP service if is not already connected
 			if (!service.isConnected()) {
 				try {
-					service.setCompressionEnabled(true);
+					service.setCompressionEnabled(false);
 					service.setReconnectionAllowed(false);
 					service.connect(serverPref, 5222, null);
 					
@@ -870,6 +870,13 @@ public class AndroidOswService extends Service implements OswService {
 	@Override
 	public void setReconnectionAllowed(boolean isAllowed) {
 		service.setReconnectionAllowed(isAllowed);
+	}
+	
+	@Override
+	public List<ActivityEntry> getReplies(ActivityEntry entry)
+			throws ConnectionRequired, AuthenticationRequired, RequestException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	// Returns the number of miliseconds until the next reconnection attempt.
