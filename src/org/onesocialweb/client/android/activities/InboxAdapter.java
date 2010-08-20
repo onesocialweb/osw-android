@@ -385,7 +385,10 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 	private void refreshActivities(List<ActivityEntry> activities) {
 		items.clear();
 		for (ActivityEntry activityEntry : activities) {
-			items.add(new InboxItem(activityEntry));
+			if ((activityEntry==null) || (activityEntry.getId()==null) || (activityEntry.getActor()==null) || (activityEntry.getActor().getUri()==null))				
+				Log.d("osw-client", "null activity found!");						
+			else
+				items.add(new InboxItem(activityEntry));
 		}
 		notifyDataSetChanged();
 	}
