@@ -872,12 +872,7 @@ public class AndroidOswService extends Service implements OswService {
 		service.setReconnectionAllowed(isAllowed);
 	}
 	
-	@Override
-	public List<ActivityEntry> getReplies(ActivityEntry entry)
-			throws ConnectionRequired, AuthenticationRequired, RequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 	
 	// Returns the number of miliseconds until the next reconnection attempt.
 	private int timeDelayReconnection() {
