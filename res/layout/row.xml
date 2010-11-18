@@ -75,9 +75,16 @@
 				android:layout_weight="1"
 				android:singleLine="false"
 				android:textColor="@drawable/list_view_row_text"
-				style="@style/statusText"
-				 />		
+				style="@style/statusText"/>		
 		
+			<TextView android:id="@+id/comments"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:layout_width="fill_parent"
+				android:visibility="gone"
+				style="@style/statusText"
+				android:textColor="@drawable/list_view_row_text">
+			</TextView>
 			<ImageView android:id="@+id/attachment" 
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

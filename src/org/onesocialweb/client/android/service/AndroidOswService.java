@@ -358,6 +358,12 @@ public class AndroidOswService extends Service implements OswService {
 			AuthenticationRequired, RequestException {
 		return service.postActivity(entry);
 	}
+	
+	@Override
+	public boolean postComment(ActivityEntry entry) throws ConnectionRequired,
+			AuthenticationRequired, RequestException {
+		return service.postComment(entry);
+	}
 
 	@Override
 	public boolean register(String username, String password, String name,
@@ -437,6 +443,12 @@ public class AndroidOswService extends Service implements OswService {
 	public boolean updateRelation(Relation relation) throws RequestException,
 			AuthenticationRequired, ConnectionRequired {
 		return service.updateRelation(relation);
+	}
+	
+	@Override
+	public List<ActivityEntry> getReplies(ActivityEntry entry)
+			throws ConnectionRequired, AuthenticationRequired, RequestException {
+		return service.getReplies(entry);
 	}
 
 	@Override
@@ -884,5 +896,6 @@ public class AndroidOswService extends Service implements OswService {
 		}
 		return 10 * 1000; // 10 seconds
 	}
+
 
 }

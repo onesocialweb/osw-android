@@ -102,6 +102,7 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 			holder.shoutedTo = (LinearLayout) convertView.findViewById(R.id.shoutedTo);
 			holder.recipients = (TextView) convertView.findViewById(R.id.recipients);
 			holder.status = (TextView) convertView.findViewById(R.id.status);
+			holder.comments = (TextView) convertView.findViewById(R.id.comments);
 			holder.picture = (ImageView) convertView.findViewById(R.id.picture);
 			holder.availability = (ImageView) convertView.findViewById(R.id.availability);
 			holder.attachment = (ImageView) convertView.findViewById(R.id.attachment);
@@ -125,6 +126,13 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 			holder.recipients.setText(item.recipients);
 		} else {
 			holder.shoutedTo.setVisibility(View.GONE);
+		}
+		
+		if (item.commentsNumber != null) {
+			holder.comments.setVisibility(View.VISIBLE);
+			holder.comments.setText(item.commentsNumber);
+		} else {
+			holder.comments.setVisibility(View.GONE);
 		}
 
 		if (item.hasAttachments) {
@@ -219,6 +227,7 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 		TextView date;
 		TextView recipients;
 		TextView status;
+		TextView comments;
 		TextView toLabel;
 		ImageView picture;
 		ImageView availability;
@@ -232,6 +241,7 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 		String jid;
 		Boolean hasAttachments = false;
 		String status;
+		String commentsNumber;
 		String author;
 		String timestamp;
 		String recipients;
@@ -273,6 +283,11 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 				}
 			} else {
 				status = "";
+			}
+			
+			// Status comments number
+			if (activity.hasReplies()) {
+				commentsNumber = "Comments: " + activity.getRepliesLink().getCount();
 			}
 
 			// Activity timestamp field
