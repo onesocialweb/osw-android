@@ -58,6 +58,7 @@
 	<string name="follow_button">Follow</string>
 	<string name="unfollow_button">Unfollow</string>
 	<string name="create_list">Create new list</string>
+	<string name="add_comment">Add a comment</string>
 	
 	<!-- Tabs -->
 	<string name="summary">Summary</string>
@@ -134,5 +135,4 @@
 	<string name="connections">connections</string>
 	<string name="listed_as">Listed as:</string>
 	<string name="visible_to">Visible to </string>
-
 </resources>

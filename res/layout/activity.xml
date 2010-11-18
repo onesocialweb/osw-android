@@ -92,8 +92,7 @@
 					android:gravity="left" android:textStyle="italic" style="@style/statusTextBig" />
 					
 				<LinearLayout android:id="@+id/infoContainer" android:orientation="horizontal"
-					android:layout_width="fill_parent" android:layout_marginTop="10dip"
-					android:layout_height="wrap_content">
+					android:layout_width="fill_parent" android:layout_height="wrap_content">
 							 
 					<ImageView android:id="@+id/infoIcon" 
 						android:layout_width="wrap_content"
@@ -144,8 +143,15 @@
 					
 			</LinearLayout>
 
-		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent" android:id="@+id/commentList" android:orientation="vertical" android:visibility="visible" android:layout_height="wrap_content"><ListView android:divider="@color/grey1" android:dividerHeight="1dip" android:fadeScrollbars="true" android:listSelector="@drawable/list_selector" android:layout_weight="1" android:id="@id/android:list" android:layout_marginLeft="20dip" android:visibility="visible" android:layout_height="wrap_content" android:layout_width="fill_parent">
+</ListView></LinearLayout>
 		
-	</ScrollView>
+		<TextView android:layout_height="fill_parent" android:layout_width="fill_parent" android:clickable="true" android:id="@+id/addComment" android:text="@string/add_comment" style="@style/statusText" android:layout_marginLeft="20dip" android:layout_marginTop="5dip"></TextView>
+
+
+</LinearLayout>
+		
+	
+</ScrollView>
 
 </RelativeLayout> 

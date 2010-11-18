@@ -43,6 +43,7 @@ import org.onesocialweb.model.atom.AtomReplyTo;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -62,10 +63,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewActivity extends Activity {
+public class ViewActivity extends ListActivity {
 
 	// Intent parameters
 	public static final String PARAM_ACTIVITY_ID = "activityId";
@@ -80,6 +82,9 @@ public class ViewActivity extends Activity {
 
 	// The view holder keep tracks of all view elements and helpers
 	private ViewHolder viewHolder;
+	
+	// View adapter for this list view
+	private ViewAdapter viewAdapter;
 
 	// The application object
 	private Onesocialweb onesocialweb;
@@ -124,6 +129,10 @@ public class ViewActivity extends Activity {
 		// Customize title bar with the activity name
 		viewHolder.title.setText("Activity details");
 		
+		// Register the inboxAdapter
+		viewAdapter = new ViewAdapter(ViewActivity.this);
+		setListAdapter(viewAdapter);
+		
 		// Add clickhandler for the shout button
 		viewHolder.shoutButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -159,6 +168,25 @@ public class ViewActivity extends Activity {
 			service.removeConnectionProcessListener(connectionListener);
 			unbindService(mConnection);
 		}
+	}
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		//TODO: gkrs: view profile of person who send comment
+//		// Fetch the activity clicked
+//		final ActivityEntry entry = inboxAdapter.getActivity(position);
+//		final String activityId = entry.getId();
+//		
+//		// Place the object in the shared storage
+//		onesocialweb.putSharedObject(activityId, entry);
+//		
+//		// Fire the intent
+//		Intent intent = new Intent(InboxActivity.this, ViewActivity.class);
+//		intent.putExtra(ViewActivity.PARAM_ACTIVITY_ID, activityId);
+//		startActivity(intent);
+//		
+//		// Propagate the event
+//		super.onListItemClick(l, v, position, id);
 	}
 
 	/* Creates the menu items */
@@ -211,6 +239,10 @@ public class ViewActivity extends Activity {
 		}
 		
 		render();
+		if (activity.hasReplies()) {
+			viewHolder.commentsList.setVisibility(View.VISIBLE);
+			viewAdapter.refreshComments(activity);
+		}
 	}
 
 	private Model parseActivity(ActivityEntry activity) {
@@ -574,10 +606,11 @@ public class ViewActivity extends Activity {
 	
 	private class ViewHolder extends CommonViewHolder {
 
-		final TextView actorName, title, status, visibleTo, date, pictureDesc, linkHref, linkDesc, jid;
+		final TextView actorName, title, status, visibleTo, date, pictureDesc, linkHref, linkDesc, jid, addComment;
 		final ImageView avatar, picture, availability;
 		final LinearLayout userInfo, pictureContainer, shoutedTo, recipients;
 		final Button shoutButton, deleteButton;
+		final LinearLayout commentsList;
 
 		public ViewHolder(Activity activity) {
 			super(activity);
@@ -598,6 +631,8 @@ public class ViewActivity extends Activity {
 			linkHref = (TextView) findViewById(R.id.link);
 			linkDesc = (TextView) findViewById(R.id.linkDesc);
 			title = (TextView) findViewById(R.id.left_text);
+			commentsList = (LinearLayout) findViewById(R.id.commentList);
+			addComment = (TextView) findViewById(R.id.addComment);
 			shoutButton = (Button) findViewById(R.id.shoutButton);
 			deleteButton = (Button) findViewById(R.id.deleteButton);
 
