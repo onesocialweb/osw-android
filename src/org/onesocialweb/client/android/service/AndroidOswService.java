@@ -25,6 +25,8 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.FormField;
+import org.jivesoftware.smackx.packet.DataForm;
 import org.onesocialweb.client.ConnectionStateListener;
 import org.onesocialweb.client.Inbox;
 import org.onesocialweb.client.InboxEventHandler;
@@ -373,6 +375,12 @@ public class AndroidOswService extends Service implements OswService {
 	}
 
 	@Override
+	public boolean register(List<FormField> fields) throws ConnectionRequired {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public boolean setProfile(Profile profile) throws RequestException,
 			AuthenticationRequired, ConnectionRequired {
 		// TODO Auto-generated method stub
@@ -403,6 +411,12 @@ public class AndroidOswService extends Service implements OswService {
 	@Override
 	public void removePresenceListener(PresenceListener listener) {
 		service.removePresenceListener(listener);
+	}
+	
+	@Override
+	public DataForm requestForm() throws ConnectionRequired {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

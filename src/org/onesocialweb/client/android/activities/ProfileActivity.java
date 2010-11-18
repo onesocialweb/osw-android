@@ -691,6 +691,7 @@ public class ProfileActivity extends TabActivity {
 				// views we want to bind data to.
 				holder = new ListViewHolder();
 				holder.date = (TextView) convertView.findViewById(R.id.date);
+				holder.comments = (TextView) convertView.findViewById(R.id.comments);
 				holder.status = (TextView) convertView.findViewById(R.id.status);
 				holder.recipients = (TextView) convertView.findViewById(R.id.recipients);
 				holder.shoutedTo = (LinearLayout) convertView.findViewById(R.id.shoutedTo);
@@ -746,6 +747,12 @@ public class ProfileActivity extends TabActivity {
 					}
 					holder.status.setText(title);
 				}
+				
+				// Status comments number
+				if (activity.hasReplies()) {
+					holder.comments.setText("Comments: " + activity.getRepliesLink().getCount());
+					holder.comments.setVisibility(View.VISIBLE);
+				}
 
 				// Add icons attachments if any
 				if (activity.hasObjects()) {
@@ -764,7 +771,7 @@ public class ProfileActivity extends TabActivity {
 		}
 
 		private class ListViewHolder {
-			TextView date, status, recipients;
+			TextView date, comments, status, recipients;
 			ImageView availability, attachment;
 			LinearLayout shoutedTo;
 		}
