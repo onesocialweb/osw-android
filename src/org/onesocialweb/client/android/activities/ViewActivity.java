@@ -18,6 +18,8 @@ package org.onesocialweb.client.android.activities;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +45,6 @@ import org.onesocialweb.model.atom.AtomReplyTo;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -63,11 +64,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewActivity extends ListActivity {
+public class ViewActivity extends Activity {
 
 	// Intent parameters
 	public static final String PARAM_ACTIVITY_ID = "activityId";
@@ -82,9 +82,6 @@ public class ViewActivity extends ListActivity {
 
 	// The view holder keep tracks of all view elements and helpers
 	private ViewHolder viewHolder;
-	
-	// View adapter for this list view
-	private ViewAdapter viewAdapter;
 
 	// The application object
 	private Onesocialweb onesocialweb;
@@ -129,10 +126,6 @@ public class ViewActivity extends ListActivity {
 		// Customize title bar with the activity name
 		viewHolder.title.setText("Activity details");
 		
-		// Register the inboxAdapter
-		viewAdapter = new ViewAdapter(ViewActivity.this);
-		setListAdapter(viewAdapter);
-		
 		// Add clickhandler for the shout button
 		viewHolder.shoutButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -168,25 +161,6 @@ public class ViewActivity extends ListActivity {
 			service.removeConnectionProcessListener(connectionListener);
 			unbindService(mConnection);
 		}
-	}
-	
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		//TODO: gkrs: view profile of person who send comment
-//		// Fetch the activity clicked
-//		final ActivityEntry entry = inboxAdapter.getActivity(position);
-//		final String activityId = entry.getId();
-//		
-//		// Place the object in the shared storage
-//		onesocialweb.putSharedObject(activityId, entry);
-//		
-//		// Fire the intent
-//		Intent intent = new Intent(InboxActivity.this, ViewActivity.class);
-//		intent.putExtra(ViewActivity.PARAM_ACTIVITY_ID, activityId);
-//		startActivity(intent);
-//		
-//		// Propagate the event
-//		super.onListItemClick(l, v, position, id);
 	}
 
 	/* Creates the menu items */
@@ -240,8 +214,8 @@ public class ViewActivity extends ListActivity {
 		
 		render();
 		if (activity.hasReplies()) {
+			refreshComments(activity);
 			viewHolder.commentsList.setVisibility(View.VISIBLE);
-			viewAdapter.refreshComments(activity);
 		}
 	}
 
@@ -611,6 +585,8 @@ public class ViewActivity extends ListActivity {
 		final LinearLayout userInfo, pictureContainer, shoutedTo, recipients;
 		final Button shoutButton, deleteButton;
 		final LinearLayout commentsList;
+		
+		private final SimpleDateFormat dfToday, dfAnotherDay;
 
 		public ViewHolder(Activity activity) {
 			super(activity);
@@ -635,7 +611,10 @@ public class ViewActivity extends ListActivity {
 			addComment = (TextView) findViewById(R.id.addComment);
 			shoutButton = (Button) findViewById(R.id.shoutButton);
 			deleteButton = (Button) findViewById(R.id.deleteButton);
-
+			
+			// Cache the date formatters
+			dfToday = new SimpleDateFormat("hh:mm a");
+			dfAnotherDay = new SimpleDateFormat("d MMM");
 		}
 	}
 
@@ -662,5 +641,147 @@ public class ViewActivity extends ListActivity {
 		String uri;
 		String title;
 		String legend;
+	}
+	
+	private class Comment {
+		String id, jid, status, author, timestamp;
+		Boolean hasAttachments = false;
+		Drawable avatar;
+		
+		TextView authorView, dateView, statusView;
+		ImageView pictureView, availabilityView, attachmentView;
+		
+		public Comment(ActivityEntry activity) {
+			
+			final String userJid = (activity.hasActor() && activity.getActor().hasUri()) ? activity.getActor().getUri() : null;
+			final String itemId = activity.hasId() ? activity.getId() : null;
+
+			// Item id field and author JID have to be present, or item is skipped
+			if (itemId == null || userJid == null) {
+				return;
+			} else {
+				id = itemId;
+				jid = userJid;
+			}
+
+			// Author field
+			if (activity.hasActor()) {
+				if (activity.getActor().hasName()) {
+					author = activity.getActor().getName();
+				} else if (userJid != null) {
+					author = userJid;
+				}
+			}
+
+			// Activity status field
+			if (activity.hasTitle()) {
+				String title = activity.getTitle();
+				if (title.length() > 200) {
+					status = title.substring(0, 197) + "...";
+				} else {
+					status = title;
+				}
+			} else {
+				status = "";
+			}
+
+			// Activity timestamp field
+			if (activity.hasPublished()) {
+				Date activityTimestamp = activity.getPublished();
+				if (activityTimestamp.getDay() == Calendar.getInstance().getTime().getDay()) {
+					timestamp = viewHolder.dfToday.format(activityTimestamp);
+				} else {
+					timestamp = viewHolder.dfAnotherDay.format(activityTimestamp);
+				}
+			}
+
+			// Attachments
+			if (activity.hasObjects()) {
+				for (ActivityObject object : activity.getObjects()) {
+					if (object.getType().equals(ActivityObject.PICTURE) || object.getType().equals(ActivityObject.LINK)) {
+						hasAttachments = true;
+					}
+				}
+			}
+		}
+	}
+	
+	private void refreshComments(ActivityEntry entry) {
+		viewHolder.commentsList.removeAllViews();
+		List<ActivityEntry> replies;
+		try {
+			replies = AndroidOswService.getInstance().getReplies(entry);
+			// Comments order should be from oldest to newest
+			Collections.reverse(replies);
+			for (ActivityEntry reply : replies) {
+				viewHolder.commentsList.addView(getCommentView(reply));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private View getCommentView(ActivityEntry activity) {
+		
+		final AsyncAvatarLoader avatarLoader = AsyncAvatarLoader.getInstance();
+
+		LayoutInflater inflater = this.getLayoutInflater();
+		View convertView = inflater.inflate(R.layout.row, null);
+
+		final Comment item = new Comment(activity);
+		item.authorView = (TextView) convertView.findViewById(R.id.author);
+		item.dateView = (TextView) convertView.findViewById(R.id.date);
+		item.statusView = (TextView) convertView.findViewById(R.id.status);
+		item.pictureView = (ImageView) convertView.findViewById(R.id.picture);
+		item.availabilityView = (ImageView) convertView.findViewById(R.id.availability);
+		item.attachmentView = (ImageView) convertView.findViewById(R.id.attachment);
+
+		// Bind the data efficiently with the holder.
+		item.dateView.setText(item.timestamp);
+		item.authorView.setText(item.author);
+		item.statusView.setText(item.status);
+		item.availabilityView.setImageResource(PresenceIcon.getPresenceResource(AndroidOswService.getInstance().getContactPresence(item.jid)));
+
+		if (item.hasAttachments) {
+			item.attachmentView.setVisibility(View.VISIBLE);
+		} else {
+			item.attachmentView.setVisibility(View.GONE);
+		}
+
+		if (item.avatar != null) {
+			item.pictureView.setImageDrawable(item.avatar);
+		} else {
+			item.pictureView.setImageResource(R.drawable.osw_avatar);
+			item.pictureView.setTag(item.id);
+			Drawable avatar = avatarLoader.getAvatarFromCache(item.jid); 
+			if (avatar != null) {
+				item.avatar = avatar;
+				item.pictureView.setImageDrawable(avatar);
+			} else {
+				avatarLoader.loadAvatar(item.jid, new AvatarCallback() {
+					@Override
+					public void avatarLoaded(String userJid, Drawable avatarDrawable) {
+						item.avatar = avatarDrawable;
+						ImageView imageView = (ImageView) item.pictureView.findViewWithTag(item.id);
+						if (imageView != null && avatarDrawable != null) {
+							imageView.setImageDrawable(avatarDrawable);
+						}
+					}
+				});
+			}
+		}
+
+//		commentsViewHolder.picture.setOnClickListener(new View.OnClickListener() {
+//			public void onClick(View v) {
+//				// Launch profileActivity with the user jid
+//				Intent intent = new Intent(context, ProfileActivity.class);
+//				intent.putExtra(ProfileActivity.PARAM_USER_JID, item.jid);
+//				commentsViewHolder.startActivity(intent);
+//			}
+//		});
+
+		// Return the constructed view
+		return convertView;
 	}
 }

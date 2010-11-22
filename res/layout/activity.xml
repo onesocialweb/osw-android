@@ -143,10 +143,14 @@
 					
 			</LinearLayout>
 
-		<LinearLayout android:layout_width="fill_parent" android:id="@+id/commentList" android:orientation="vertical" android:visibility="visible" android:layout_height="wrap_content"><ListView android:divider="@color/grey1" android:dividerHeight="1dip" android:fadeScrollbars="true" android:listSelector="@drawable/list_selector" android:layout_weight="1" android:id="@id/android:list" android:layout_marginLeft="20dip" android:visibility="visible" android:layout_height="wrap_content" android:layout_width="fill_parent">
-</ListView></LinearLayout>
+		<LinearLayout android:layout_width="fill_parent" android:id="@+id/commentList"
+					android:orientation="vertical" android:layout_height="wrap_content"
+					android:layout_marginLeft="20dip" android:visibility="gone" />
 		
-		<TextView android:layout_height="fill_parent" android:layout_width="fill_parent" android:clickable="true" android:id="@+id/addComment" android:text="@string/add_comment" style="@style/statusText" android:layout_marginLeft="20dip" android:layout_marginTop="5dip"></TextView>
+		<TextView android:layout_height="fill_parent" android:layout_width="fill_parent"
+					android:clickable="true" android:id="@+id/addComment"
+					android:text="@string/add_comment" style="@style/statusText"
+					android:layout_marginLeft="20dip" android:layout_marginTop="5dip" />
 
 
 </LinearLayout>
