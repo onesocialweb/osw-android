@@ -11,6 +11,7 @@
 	<string name="profile">Profile</string>
 	<string name="contacts">Contacts</string>
 	<string name="composer">Composer</string>
+	<string name="comment">Comment</string>
 	
 	<!-- Preferences  -->
     <string name="autostart_preferences">Auto Start</string>
@@ -57,8 +58,9 @@
 	<string name="share_button">Share</string>
 	<string name="follow_button">Follow</string>
 	<string name="unfollow_button">Unfollow</string>
+	<string name="comment_button">Comment</string>
+	<string name="more_button">More actions...</string>
 	<string name="create_list">Create new list</string>
-	<string name="add_comment">Add a comment</string>
 	
 	<!-- Tabs -->
 	<string name="summary">Summary</string>
@@ -81,16 +83,20 @@
 	<string name="adding_person">Adding person to the list...</string>
 	<string name="removing_person">Removing person from the list...</string>
 	<string name="creating_list">Creating the list...</string>
+	<string name="posting_comment">Posting comment...</string>
 	<string name="sharing">Sharing...</string>
 	<string name="deleting">Deleting...</string>
 	<string name="add_recipient">Add recipient</string>
 	<string name="attempting_reconnect">Attempting to reconnect</string>
+	<string name="choose_action">Choose an action...</string>
+	<string name="action_not_allowed">You cannot do that</string>
 	
 	<!-- Errors -->
 	<string name="error_add_user_to_list">Oops, could not add user to the list.</string>
 	<string name="error_remove_user_from_list">Oops, could not remove user from the list.</string>
 	<string name="error_create_list">Oops, could not create a new list.</string>
 	<string name="error_empty_update">Is that really all what you have to say?</string>
+	<string name="error_unable_to_comment">Connection unavailable, unable to post this comment</string>
 	<string name="error_unable_to_share">Connection unavailable, unable to share this activity</string>
 	<string name="error_unable_to_delete">Connection unavailable, unable to delete this activity</string>
 	<string name="error_username_password_empty">Username and password can not be empty values</string>
@@ -127,6 +133,7 @@
 	<string name="search_user">Search new user</string>
 	<string name="user_at_domain">user@domain</string>
 	<string name="whats_up">What\'s up?</string>
+	<string name="your_comment">Your comment</string>
 	
 	<!-- Bits -->
 	<string name="at">at</string>

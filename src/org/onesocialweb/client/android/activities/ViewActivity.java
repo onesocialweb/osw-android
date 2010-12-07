@@ -44,10 +44,12 @@ import org.onesocialweb.model.atom.AtomLink;
 import org.onesocialweb.model.atom.AtomReplyTo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
@@ -92,7 +94,15 @@ public class ViewActivity extends Activity {
 	// A listener for connection state changes (to update the UI)
 	private ConnectionStatusListener connectionListener;
 	
+	// Dialogs
 	private static final int DIALOG_DELETING = 0;
+	private static final int DIALOG_MORE_ACTIONS = 1;
+	
+	// Dialog items
+	private static final int ITEM_SHOUT = 0;
+	private static final int ITEM_DELETE = 1;
+	private static final int ITEM_REFRESH = 2;
+	
 	private boolean isOwner = false;
 	
 	// The id of the activity we must display
@@ -126,13 +136,21 @@ public class ViewActivity extends Activity {
 		// Customize title bar with the activity name
 		viewHolder.title.setText("Activity details");
 		
-		// Add clickhandler for the shout button
-		viewHolder.shoutButton.setOnClickListener(new OnClickListener() {
+		// Add click handler for the comment button
+		viewHolder.commentButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ViewActivity.this, ComposeActivity.class);
-				intent.putExtra(ComposeActivity.RECIPIENT_JID, userJid);
+				Intent intent = new Intent(ViewActivity.this, CommentActivity.class);
+				intent.putExtra(CommentActivity.PARENT_ACTIVITY_ID, activityId);
 				startActivity(intent);
+			}
+		});
+		
+		// Add click handler for the "More..." button
+		viewHolder.moreButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_MORE_ACTIONS);
 			}
 		});
 	}
@@ -460,20 +478,6 @@ public class ViewActivity extends Activity {
 			viewHolder.linkDesc.setVisibility(View.GONE);
 			viewHolder.linkHref.setVisibility(View.GONE);
 		}
-		
-		// if the author is the same as person logged in, show the delete button
-		if (isOwner) {
-			viewHolder.deleteButton.setVisibility(View.VISIBLE);
-			
-			// add click handler to the button
-			viewHolder.deleteButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// delete the activity
-					onDeleteActivity();
-				}
-			});
-		}
 	}
 
 	@Override
@@ -486,6 +490,39 @@ public class ViewActivity extends Activity {
 				dialog.setIndeterminate(true);
 				dialog.setCancelable(true);
 				return dialog;
+			}
+			case DIALOG_MORE_ACTIONS: {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						ViewActivity.this);				
+				CharSequence[] items = {"Shout", "Delete", "Refresh"};
+				builder.setTitle(R.string.choose_action);
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int item) {
+						switch (item) {
+						case ITEM_SHOUT:
+							Intent intent = new Intent(ViewActivity.this, ComposeActivity.class);
+							intent.putExtra(ComposeActivity.RECIPIENT_JID, userJid);
+							startActivity(intent);
+							break;
+							
+						case ITEM_DELETE:
+							if (isOwner) {
+								// delete the activity
+								onDeleteActivity();
+							} else {
+								showError(getResources().getString(R.string.action_not_allowed));
+							}
+							break;
+						case ITEM_REFRESH:
+							//TODO: refresh view
+							break;
+						default:
+							break;
+						}
+					}
+				});
+				AlertDialog alert = builder.create();
+				return alert;
 			}
 		}
 		return null;
@@ -523,7 +560,7 @@ public class ViewActivity extends Activity {
 		
 		// Need to be connected
 		if (!service.isConnected() || !service.isAuthenticated()) {
-			showError(getResources().getString(R.string.error_unable_to_share));
+			showError(getResources().getString(R.string.error_unable_to_delete));
 			return;
 		}
 
@@ -580,10 +617,10 @@ public class ViewActivity extends Activity {
 	
 	private class ViewHolder extends CommonViewHolder {
 
-		final TextView actorName, title, status, visibleTo, date, pictureDesc, linkHref, linkDesc, jid, addComment;
+		final TextView actorName, title, status, visibleTo, date, pictureDesc, linkHref, linkDesc, jid;
 		final ImageView avatar, picture, availability;
 		final LinearLayout userInfo, pictureContainer, shoutedTo, recipients;
-		final Button shoutButton, deleteButton;
+		final Button commentButton, moreButton;
 		final LinearLayout commentsList;
 		
 		private final SimpleDateFormat dfToday, dfAnotherDay;
@@ -608,9 +645,8 @@ public class ViewActivity extends Activity {
 			linkDesc = (TextView) findViewById(R.id.linkDesc);
 			title = (TextView) findViewById(R.id.left_text);
 			commentsList = (LinearLayout) findViewById(R.id.commentList);
-			addComment = (TextView) findViewById(R.id.addComment);
-			shoutButton = (Button) findViewById(R.id.shoutButton);
-			deleteButton = (Button) findViewById(R.id.deleteButton);
+			commentButton = (Button) findViewById(R.id.commentButton);
+			moreButton = (Button) findViewById(R.id.moreButton);
 			
 			// Cache the date formatters
 			dfToday = new SimpleDateFormat("hh:mm a");
@@ -673,14 +709,10 @@ public class ViewActivity extends Activity {
 				}
 			}
 
-			// Activity status field
+			// Activity comment status field
 			if (activity.hasTitle()) {
 				String title = activity.getTitle();
-				if (title.length() > 200) {
-					status = title.substring(0, 197) + "...";
-				} else {
-					status = title;
-				}
+				status = title;
 			} else {
 				status = "";
 			}
@@ -772,14 +804,14 @@ public class ViewActivity extends Activity {
 			}
 		}
 
-//		commentsViewHolder.picture.setOnClickListener(new View.OnClickListener() {
-//			public void onClick(View v) {
-//				// Launch profileActivity with the user jid
-//				Intent intent = new Intent(context, ProfileActivity.class);
-//				intent.putExtra(ProfileActivity.PARAM_USER_JID, item.jid);
-//				commentsViewHolder.startActivity(intent);
-//			}
-//		});
+		convertView.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Launch profileActivity with the user jid
+				Intent intent = new Intent(ViewActivity.this, ProfileActivity.class);
+				intent.putExtra(ProfileActivity.PARAM_USER_JID, item.jid);
+				startActivity(intent);
+			}
+		});
 
 		// Return the constructed view
 		return convertView;
