@@ -1,39 +1,13 @@
-/*
- *  Copyright 2010 Vodafone Group Services Ltd.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *    
- */
 package org.onesocialweb.client.android.activities;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 import org.onesocialweb.client.ConnectionStateListener.ConnectionState;
 import org.onesocialweb.client.android.Onesocialweb;
 import org.onesocialweb.client.android.R;
 import org.onesocialweb.client.android.activities.common.ConnectionStatusListener;
 import org.onesocialweb.client.android.service.AndroidOswService;
-import org.onesocialweb.model.acl.AclAction;
-import org.onesocialweb.model.acl.AclFactory;
-import org.onesocialweb.model.acl.AclRule;
-import org.onesocialweb.model.acl.AclSubject;
-import org.onesocialweb.model.acl.DefaultAclFactory;
 import org.onesocialweb.model.activity.ActivityEntry;
 import org.onesocialweb.model.activity.ActivityFactory;
 import org.onesocialweb.model.activity.ActivityObject;
-import org.onesocialweb.model.activity.ActivityVerb;
 import org.onesocialweb.model.activity.DefaultActivityFactory;
 import org.onesocialweb.model.atom.AtomFactory;
 import org.onesocialweb.model.atom.DefaultAtomFactory;
@@ -56,10 +30,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CommentActivity extends Activity {
+public class UpdateActivity extends Activity {
 	
 	// Key for Intents
 	public static final String PARENT_ACTIVITY_ID = "parentActivityId";
+	public static final String STATUS_TEXT = "statusText";
 	
 	// Keep track of view elements
 	private ViewHolder viewHolder;
@@ -70,7 +45,7 @@ public class CommentActivity extends Activity {
 	// A listener for connection state changes (to update the UI)
 	private ConnectionStatusListener connectionListener;
 	
-	private static final int DIALOG_POSTING_COMMENT = 0;
+	private static final int DIALOG_POSTING_UPDATE = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,17 +61,20 @@ public class CommentActivity extends Activity {
 		// Keep track of the view elements
 		viewHolder = new ViewHolder(this);
 		
-		// Initialize the view
-		initView();
-		
 		// Create the connection state listener
 		connectionListener = new ConnectionStatusListener(viewHolder);
 		
+		// Initialize the view
+		initView();
+		
 		// Customize title bar with the activity name
-		viewHolder.title.setText(R.string.comment);
-
+		viewHolder.title.setText(R.string.update);
+		
+		CharSequence statusText = getIntent().getStringExtra(STATUS_TEXT);
+		viewHolder.statusText.setText(statusText);
+		
 		// Bind with the OswService
-		bindService(new Intent(CommentActivity.this, AndroidOswService.class),
+		bindService(new Intent(UpdateActivity.this, AndroidOswService.class),
 				mConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -106,14 +84,14 @@ public class CommentActivity extends Activity {
 		super.onResume();
 		
 		// Bind with the OswService
-		bindService(new Intent(CommentActivity.this, AndroidOswService.class), mConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(UpdateActivity.this, AndroidOswService.class), mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
 	protected void onPause() {
 		// Be sure to call the super class.
 		super.onPause();
-
+		
 		// Cleanup our listeners and service bindings
 		if (service != null) {
 			service.removeConnectionStateListener(connectionListener);
@@ -124,29 +102,32 @@ public class CommentActivity extends Activity {
 	
 	private void initView() {
 		
+		// Text on the post button
+		viewHolder.updateButton.setText(R.string.update);
+		
 		// Click handlers
-		viewHolder.commentButton.setOnClickListener(new View.OnClickListener() {
+		viewHolder.updateButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				onCommentActivity();
+				onUpdateActivity();
 			}
 		});
-
+		
 		viewHolder.cancelButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onCancel();
 			}
-		});		
+		});
 	}
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
 
 		switch (id) {
-			case DIALOG_POSTING_COMMENT: {
+			case DIALOG_POSTING_UPDATE: {
 				ProgressDialog dialog = new ProgressDialog(this);
-				dialog.setMessage(getResources().getText(R.string.posting_comment));
+				dialog.setMessage(getResources().getText(R.string.posting_update));
 				dialog.setIndeterminate(true);
 				dialog.setCancelable(true);
 				return dialog;
@@ -154,11 +135,11 @@ public class CommentActivity extends Activity {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Class for interacting with the main interface of the service.
 	 */
-	private ServiceConnection mConnection = new ServiceConnection() {
+	protected ServiceConnection mConnection = new ServiceConnection() {
 
 		public void onServiceConnected(ComponentName className, IBinder iService) {
 
@@ -183,79 +164,67 @@ public class CommentActivity extends Activity {
 		}
 	};
 
-
-	public void onCancel() {
-			new AsyncSimulateBackKey().execute();
-	}
-
-	public void onCommentActivity() {
+	private void onUpdateActivity() {
 		
 		// Need to be connected
 		if (!service.isConnected() || !service.isAuthenticated()) {
-			showError(getResources().getString(R.string.error_unable_to_comment));
+			showError(getResources().getString(R.string.error_unable_to_update));
 			return;
 		}
 		
 		// Need to actually post something
-		final String comment = viewHolder.commentText.getText().toString();
-		if (comment == null || comment.length() == 0) {
+		final String statusUpdate = viewHolder.statusText.getText().toString();
+		if (statusUpdate == null || statusUpdate.length() == 0) {
 			showError(getResources().getString(R.string.error_empty_update));
 			return;
 		}
-
-		// Good to go !
-		ActivityFactory activityFactory = new DefaultActivityFactory();
-		AtomFactory atomFactory = new DefaultAtomFactory();
-		ActivityObject object = activityFactory.object();
-		ActivityEntry entry = activityFactory.entry();
+		
 		String parentActivityId = getIntent().getStringExtra(PARENT_ACTIVITY_ID);
 		Onesocialweb osw = (Onesocialweb) getApplication();
-		ActivityEntry parentActivity = (ActivityEntry) osw.getSharedObject(parentActivityId);
-		
-		// Assign default privacy rules
-		// TODO: handle other privacy rules
-		AclFactory aclFactory = new DefaultAclFactory();
-		List<AclRule> defaultRules = new ArrayList<AclRule>();
-		AclRule rule = new DefaultAclFactory().aclRule();
-		rule.addSubject(aclFactory.aclSubject(null, AclSubject.EVERYONE));
-		rule.addAction(aclFactory.aclAction(AclAction.ACTION_VIEW, AclAction.PERMISSION_GRANT));
-		defaultRules.add(rule);
-		
-		// Prepare comment body
-		object.setType(ActivityObject.COMMENT);
-		object.addContent(atomFactory.content(comment, "text/plain", null));
-		entry.setPublished(Calendar.getInstance().getTime());
-		entry.addVerb(activityFactory.verb(ActivityVerb.POST));
-		entry.addObject(object);
-		entry.setAclRules(defaultRules);
-		entry.setTitle(comment);
-		entry.setParentId(parentActivity.getId());
-		entry.setParentJID(parentActivity.getActor().getUri());
+		ActivityEntry parentActivity = (ActivityEntry) osw.getSharedObject(parentActivityId);	
 
-		// Post the comment asynchronously
-		new AsyncPostComment().execute(entry);
+		if (parentActivity != null){				
+			ActivityFactory activityFactory = new DefaultActivityFactory();
+			AtomFactory atomFactory = new DefaultAtomFactory();
+			parentActivity.setTitle(statusUpdate);
+			//we update the object content too...
+			for (ActivityObject object : parentActivity.getObjects()){
+				if (object.getType().equals(ActivityObject.STATUS_UPDATE)){					
+					parentActivity.getObjects().remove(object);
+					object = activityFactory.object();
+					object.setType(ActivityObject.STATUS_UPDATE);
+					object.addContent(atomFactory.content(statusUpdate, "text/plain", null));
+					parentActivity.addObject(object);
+				}
+			}		
+			// Post the update asynchronously
+			new AsyncPostUpdate().execute(parentActivity);
+		}
 	}
 	
-	private class AsyncPostComment extends AsyncTask<ActivityEntry, Void, Void> {
+	public void onCancel() {
+		new AsyncSimulateBackKey().execute();
+	}
+	
+	private class AsyncPostUpdate extends AsyncTask<ActivityEntry, Void, Void> {
 
 		private boolean isPosted = false;
 		
 		@Override
 		protected void onPreExecute() {
-			showDialog(DIALOG_POSTING_COMMENT);
+			showDialog(DIALOG_POSTING_UPDATE);
 			super.onPreExecute();
 		}
 
 		@Override
 		protected Void doInBackground(ActivityEntry... activity) {			
 			try {
-				if (service.postComment(activity[0])) {
+				if (service.updateActivity(activity[0])) {
 					isPosted = true;
 				}
 			} catch (Exception e) {}
 
 			if (isPosted) {
-				//TODO: refresh view activity after return
 				finish();
 			}
 			
@@ -265,9 +234,9 @@ public class CommentActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			// We are done
-			dismissDialog(DIALOG_POSTING_COMMENT);
+			dismissDialog(DIALOG_POSTING_UPDATE);
 			if (!isPosted) {
-				Toast.makeText(CommentActivity.this, getResources().getString(R.string.error_unable_to_comment), Toast.LENGTH_SHORT).show();
+				Toast.makeText(UpdateActivity.this, getResources().getString(R.string.error_unable_to_update), Toast.LENGTH_SHORT).show();
 			}
 			super.onPostExecute(result);
 		}
@@ -287,7 +256,7 @@ public class CommentActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			simulateKeyStroke(KeyEvent.KEYCODE_BACK, CommentActivity.this);
+			simulateKeyStroke(KeyEvent.KEYCODE_BACK, UpdateActivity.this);
 			super.onPreExecute();
 		}
 
@@ -305,24 +274,24 @@ public class CommentActivity extends Activity {
 	
 	private void showError(String error) {
 		Toast.makeText(
-				CommentActivity.this,
+				UpdateActivity.this,
 				error,
 				Toast.LENGTH_SHORT).show();
 	}
 	
 	private class ViewHolder extends CommonViewHolder {
 		
-		private final Button commentButton, cancelButton;
-		private TextView title;
-		private EditText commentText;
+		protected final Button updateButton, cancelButton;
+		protected TextView title;
+		protected EditText statusText;
 		
-		public ViewHolder(Activity activity) {
+		ViewHolder(Activity activity) {
 			super(activity);
 			title = (TextView) findViewById(R.id.left_text);
-			commentButton = (Button) findViewById(R.id.postButton);
+			updateButton = (Button) findViewById(R.id.postButton);
 			cancelButton = (Button) findViewById(R.id.cancelButton);
-			commentText = (EditText) findViewById(R.id.editText);
+			statusText = (EditText) findViewById(R.id.editText);
 		}
-		
 	}
+
 }

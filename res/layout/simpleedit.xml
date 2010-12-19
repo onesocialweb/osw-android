@@ -15,7 +15,7 @@
 			android:layout_height="wrap_content" android:background="@color/OSWtopbar" android:padding="6dip">
 	
 			<Button android:layout_width="fill_parent" android:layout_height="wrap_content"
-				android:layout_weight="50" android:id="@+id/commentButton" android:text="@string/comment_button" />
+				android:layout_weight="50" android:id="@+id/postButton" android:text="@string/comment_button" />
 
 			<Button android:id="@+id/cancelButton"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
 				android:paddingLeft="6dp" android:paddingRight="6dp" >
 				<EditText android:layout_width="fill_parent" android:layout_height="100dp"
 					android:textSize="14sp" android:autoText="false"
-					android:gravity="top" android:capitalize="sentences" android:id="@+id/commentText" android:hint="@string/your_comment"/>
+					android:gravity="top" android:capitalize="sentences" android:id="@+id/editText" android:hint="@string/your_comment" />
 			</LinearLayout>
 
 		</LinearLayout>

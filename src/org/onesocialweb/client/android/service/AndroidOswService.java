@@ -388,9 +388,9 @@ public class AndroidOswService extends Service implements OswService {
 	}
 
 	@Override
-	public boolean updateActivity(ActivityEntry entry) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean updateActivity(ActivityEntry entry)
+			throws ConnectionRequired, AuthenticationRequired, RequestException {
+		return service.updateActivity(entry);
 	}
 
 	@Override

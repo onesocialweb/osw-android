@@ -42,8 +42,16 @@
 			android:windowSoftInputMode="adjustPan"
 			android:launchMode="singleTask">
 		</activity>
+		
 		<activity android:name="org.onesocialweb.client.android.activities.CommentActivity"
 			android:label="@string/comment"
+			android:configChanges="orientation"
+			android:windowSoftInputMode="adjustPan"
+			android:launchMode="singleTask" >
+		</activity>
+		
+		<activity android:name="org.onesocialweb.client.android.activities.UpdateActivity"
+			android:label="@string/update"
 			android:configChanges="orientation"
 			android:windowSoftInputMode="adjustPan"
 			android:launchMode="singleTask" >

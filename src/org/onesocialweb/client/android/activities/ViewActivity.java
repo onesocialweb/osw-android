@@ -100,8 +100,9 @@ public class ViewActivity extends Activity {
 	
 	// Dialog items
 	private static final int ITEM_SHOUT = 0;
-	private static final int ITEM_DELETE = 1;
-	private static final int ITEM_REFRESH = 2;
+	private static final int ITEM_UPDATE = 1;
+	private static final int ITEM_DELETE = 2;
+	private static final int ITEM_REFRESH = 3;
 	
 	private boolean isOwner = false;
 	
@@ -494,7 +495,7 @@ public class ViewActivity extends Activity {
 			case DIALOG_MORE_ACTIONS: {
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						ViewActivity.this);				
-				CharSequence[] items = {"Shout", "Delete", "Refresh"};
+				CharSequence[] items = {"Shout", "Update", "Delete", "Refresh"};
 				builder.setTitle(R.string.choose_action);
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int item) {
@@ -504,7 +505,18 @@ public class ViewActivity extends Activity {
 							intent.putExtra(ComposeActivity.RECIPIENT_JID, userJid);
 							startActivity(intent);
 							break;
-							
+						
+						case ITEM_UPDATE:
+							if (isOwner) {								
+								Intent intentUpdate = new Intent(ViewActivity.this, UpdateActivity.class);
+								intentUpdate.putExtra(UpdateActivity.PARENT_ACTIVITY_ID, activityId);
+								intentUpdate.putExtra(UpdateActivity.STATUS_TEXT, viewHolder.status.getText());
+								startActivity(intentUpdate);
+							} else {
+								showError(getResources().getString(R.string.action_not_allowed));
+							}
+							break;
+						
 						case ITEM_DELETE:
 							if (isOwner) {
 								// delete the activity
