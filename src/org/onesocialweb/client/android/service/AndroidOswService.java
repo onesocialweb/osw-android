@@ -572,6 +572,11 @@ public class AndroidOswService extends Service implements OswService {
 		@Override
 		public void onMessageUpdated(ActivityEntry entry) {}
 		
+		@Override
+		public void onReplyAdded(ActivityEntry entry) {
+			displayNotificationNewReply(entry);	
+		}
+		
 	}
 
 	/** Get login preferences: jid and password */
@@ -682,6 +687,80 @@ public class AndroidOswService extends Service implements OswService {
 		}
 
 	}
+	
+	//Luca Faggioli: we need to refactor this with displayNotification
+	/** Display a status bar notification when a new reply arrives */
+	private void displayNotificationNewReply(ActivityEntry activity) {
+		Log.d(Onesocialweb.LOGTAG, "AndroidOswService DisplayNotification for repllies");
+		
+		String ns = AndroidOswService.NOTIFICATION_SERVICE;
+		NotificationManager notificationManager = (NotificationManager) getSystemService(ns);
+
+		int icon = R.drawable.ic_stat_notify_new;
+		CharSequence tickerText = "New comment";
+		long when = System.currentTimeMillis();
+
+		Notification notification = new Notification(icon,
+				tickerText, when);
+
+		if (notifVibrate) {
+			if (vibratePattern.equals("default")) {
+				notification.defaults |= Notification.DEFAULT_VIBRATE;
+			} else {
+
+				if (!vibratePattern.equals("default")) {
+					notification.vibrate = OswPreferences
+							.parseVibratePattern(vibratePattern);
+
+				} else {
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+				}
+			}
+		}
+
+		if (notifFLashing) {
+			if (ledColor.equals("default")) {
+				notification.defaults |= Notification.DEFAULT_LIGHTS;
+			} else {
+				int color = Color.parseColor(ledColor);
+
+				notification.ledARGB = color;
+				notification.ledOnMS = 300;
+				notification.ledOffMS = 1000;
+				notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+			}
+		}
+
+		// If the ringtone selected is "silent" do not use any
+		// sound
+		// for the notification
+
+		if (notifRingtone.length() != 0) {
+			notification.sound = Uri.parse(notifRingtone);
+		}
+
+		// To clear the notification just after been read
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+		// Notification's expanded message
+		Context context = getApplicationContext();
+		CharSequence contentTitle = "Unread comments to ";
+		CharSequence contentText = "default text";
+
+		contentText = activity.getTitle().toString();
+
+		Intent notificationIntent = new Intent(this,
+				InboxActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(context, contentTitle,
+				contentText, contentIntent);
+		notificationManager.notify(NOTIFICATION_ID, notification);
+		
+		return;
+
+	}
+	
 
 	/** Compares the notification sender and the current user */
 	private boolean filterPopUpNotification(ActivityEntry activity) {

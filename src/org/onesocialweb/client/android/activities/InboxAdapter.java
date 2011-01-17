@@ -12,6 +12,10 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
+ *  
+ *  2011-01-16 Modified by Luca Faggioli Copyright 2010 Openliven S.r.l
+ *  
+ *  added notification of new Comments 
  *    
  */
 package org.onesocialweb.client.android.activities;
@@ -366,6 +370,12 @@ public class InboxAdapter extends BaseAdapter implements InboxEventHandler {
 	
 	@Override
 	public void onMessageUpdated(ActivityEntry entry) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onReplyAdded(ActivityEntry entry) {
 		// TODO Auto-generated method stub
 		
 	}
