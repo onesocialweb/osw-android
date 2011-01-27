@@ -56,6 +56,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -436,6 +437,7 @@ public class ViewActivity extends Activity {
 		// Display the activity title (which is in fact the status update)
 		if (model.status != null) {
 			viewHolder.status.setText(model.status);
+			Linkify.addLinks(viewHolder.status, Linkify.WEB_URLS);
 		}
 
 		// Display the first picture (should evolve to a proper list)
@@ -785,6 +787,7 @@ public class ViewActivity extends Activity {
 		item.dateView.setText(item.timestamp);
 		item.authorView.setText(item.author);
 		item.statusView.setText(item.status);
+		Linkify.addLinks(item.statusView, Linkify.WEB_URLS);
 		item.availabilityView.setImageResource(PresenceIcon.getPresenceResource(AndroidOswService.getInstance().getContactPresence(item.jid)));
 
 		if (item.hasAttachments) {
