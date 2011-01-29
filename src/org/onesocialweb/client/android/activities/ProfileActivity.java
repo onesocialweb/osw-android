@@ -57,9 +57,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -166,7 +166,16 @@ public class ProfileActivity extends TabActivity {
 		super.onResume();
 
 		// Get the intent which has called this activity in order to get the
-		userJid = getIntent().getStringExtra(PARAM_USER_JID); 
+		userJid = getIntent().getStringExtra(PARAM_USER_JID);
+		if(userJid == null) {
+			//in case of mention
+			Intent intent = getIntent();
+			if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+				  Uri uri = intent.getData();
+				  userJid = uri.getPath().replace("/@", "");
+				}
+
+		}
 		
 		// Bind with the OswService
 		bindService(new Intent(ProfileActivity.this, AndroidOswService.class), mConnection, Context.BIND_AUTO_CREATE);

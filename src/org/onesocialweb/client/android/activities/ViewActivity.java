@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.onesocialweb.client.ConnectionStateListener.ConnectionState;
 import org.onesocialweb.client.android.Onesocialweb;
@@ -437,7 +438,20 @@ public class ViewActivity extends Activity {
 		// Display the activity title (which is in fact the status update)
 		if (model.status != null) {
 			viewHolder.status.setText(model.status);
+			//clickable links
 			Linkify.addLinks(viewHolder.status, Linkify.WEB_URLS);
+			//mentions
+			Pattern mentionPattern = Pattern.compile(
+					            "@[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+					            "\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+					            "(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+					            ")+");
+			String profileScheme = "osw-android://profile/";
+			Linkify.addLinks(viewHolder.status, mentionPattern, profileScheme);
+
+
+
+			
 		}
 
 		// Display the first picture (should evolve to a proper list)
@@ -787,7 +801,17 @@ public class ViewActivity extends Activity {
 		item.dateView.setText(item.timestamp);
 		item.authorView.setText(item.author);
 		item.statusView.setText(item.status);
+		//clickable links
 		Linkify.addLinks(item.statusView, Linkify.WEB_URLS);
+		//mentions
+		Pattern mentionPattern = Pattern.compile(
+	            "@[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+	            "\\@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+	            "(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+	            ")+");
+		String profileScheme = "osw-android://profile/";
+		Linkify.addLinks(viewHolder.status, mentionPattern, profileScheme);
+		
 		item.availabilityView.setImageResource(PresenceIcon.getPresenceResource(AndroidOswService.getInstance().getContactPresence(item.jid)));
 
 		if (item.hasAttachments) {

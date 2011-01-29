@@ -28,6 +28,11 @@
 		<activity android:name="org.onesocialweb.client.android.activities.ProfileActivity"
 			android:label="@string/profile"
 			android:windowSoftInputMode="adjustPan">
+			<intent-filter>
+		        <action android:name="android.intent.action.VIEW" />
+		        <category android:name="android.intent.category.DEFAULT" />
+		        <data android:scheme="osw-android" android:host="profile"/>
+    		</intent-filter>
 		</activity>
 
 		<activity
