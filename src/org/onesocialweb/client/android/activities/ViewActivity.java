@@ -810,7 +810,7 @@ public class ViewActivity extends Activity {
 	            "(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
 	            ")+");
 		String profileScheme = "osw-android://profile/";
-		Linkify.addLinks(viewHolder.status, mentionPattern, profileScheme);
+		Linkify.addLinks(item.statusView, mentionPattern, profileScheme);
 		
 		item.availabilityView.setImageResource(PresenceIcon.getPresenceResource(AndroidOswService.getInstance().getContactPresence(item.jid)));
 
