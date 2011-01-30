@@ -104,6 +104,7 @@
 	<string name="error_unable_to_share">Connection unavailable, unable to share this activity</string>
 	<string name="error_unable_to_delete">Connection unavailable, unable to delete this activity</string>
 	<string name="error_username_password_empty">Username and password can not be empty values</string>
+	<string name="profile_not_found">Profile not found</string>
 	
 	<!-- Instructions -->
 	<string name="add_or_remove">Add or remove this person from your lists below.</string>

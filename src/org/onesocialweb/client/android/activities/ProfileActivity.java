@@ -296,6 +296,10 @@ public class ProfileActivity extends TabActivity {
 	}
 
 	private void setProfile(Profile profile) {
+		if(profile == null) {
+			showError(getResources().getString(R.string.profile_not_found));
+			return;
+		}
 		this.profile = profile;
 		updateProfileSummary();
 		updateCompleteProfileTab();
@@ -1095,6 +1099,13 @@ public class ProfileActivity extends TabActivity {
 			shoutButton = (Button) findViewById(R.id.shoutButton);
 		}
 
+	}
+	
+	private void showError(String error) {
+		Toast.makeText(
+				ProfileActivity.this,
+				error,
+				Toast.LENGTH_SHORT).show();
 	}
 
 }
